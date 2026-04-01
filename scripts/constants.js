@@ -1,6 +1,7 @@
 export const physicalTypes = [
    "armor",
    "weapon",
+   "shield",
    "equipment",
    "consumable",
    "treasure",

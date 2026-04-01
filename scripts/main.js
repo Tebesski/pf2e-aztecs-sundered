@@ -14,8 +14,10 @@ Hooks.once("init", () => {
 })
 
 const buildDurabilityHTML = (item, isSheet = false) => {
+   let isShield = item.type === "shield"
+   let isDefaultType =
+      item.type === "armor" || item.type === "weapon" || isShield
    let maxHpFlag = item.getFlag("world", "maxHp")
-   let isDefaultType = item.type === "armor" || item.type === "weapon"
    let hasDurability = maxHpFlag !== undefined
 
    let containerStyle = isSheet
@@ -28,20 +30,32 @@ const buildDurabilityHTML = (item, isSheet = false) => {
         </div>`
    }
 
-   let currentHp =
-      isDefaultType && !hasDurability
-         ? 10
-         : item.getFlag("world", "currentHp") ?? 0
-   let maxHp = isDefaultType && !hasDurability ? 10 : maxHpFlag ?? 0
-   let hardness =
-      isDefaultType && !hasDurability
-         ? 5
-         : item.getFlag("world", "hardness") ?? 0
-   let threshold = Math.floor(maxHp / 2)
+   let currentHp = isShield
+      ? item.system.hp?.value ?? 0
+      : isDefaultType && !hasDurability
+      ? 10
+      : item.getFlag("world", "currentHp") ?? 0
+   let maxHp = isShield
+      ? item.system.hp?.max ?? 0
+      : isDefaultType && !hasDurability
+      ? 10
+      : maxHpFlag ?? 0
+   let hardness = isShield
+      ? item.system.hardness ?? 0
+      : isDefaultType && !hasDurability
+      ? 5
+      : item.getFlag("world", "hardness") ?? 0
+   let threshold = isShield
+      ? item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2)
+      : Math.floor(maxHp / 2)
 
    let ignoreLabel = isSheet
       ? `<label style="display:flex; align-items:center; gap: 4px; font-size: 0.9em; cursor: pointer; margin: 0;"><input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" style="margin: 0; width: 14px; height: 14px;"> Ignore Hardness</label>`
       : `<input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" title="Ignore Hardness" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">`
+
+   let assignMaterialMarkup = isShield
+      ? ""
+      : `<a class="assign-material" data-item-id="${item.id}" title="Assign Material"><i class="fa-solid fa-m"></i> Assign Material</a>`
 
    return `
         <div class="aztec-durability-summary" style="${containerStyle}">
@@ -54,7 +68,7 @@ const buildDurabilityHTML = (item, isSheet = false) => {
                         ${ignoreLabel}
                     </span>
                 </span>
-                <a class="assign-material" data-item-id="${item.id}" title="Assign Material"><i class="fa-solid fa-m"></i> Assign Material</a>
+                ${assignMaterialMarkup}
             </div>
             <div>
                 <span>Hardness: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="hardness" contenteditable="true">${hardness}</span> (BT: ${threshold})</span>
@@ -110,11 +124,16 @@ const attachDurabilityListeners = (html, entity) => {
 
          if (item) {
             let updates = {}
-            let isDefaultType = item.type === "weapon" || item.type === "armor"
-            let currentMax =
-               item.getFlag("world", "maxHp") ?? (isDefaultType ? 10 : 1)
-            let currentHp =
-               item.getFlag("world", "currentHp") ?? (isDefaultType ? 10 : 0)
+            let isShield = item.type === "shield"
+            let isDefaultType =
+               item.type === "weapon" || item.type === "armor" || isShield
+
+            let currentMax = isShield
+               ? item.system.hp?.max ?? 1
+               : item.getFlag("world", "maxHp") ?? (isDefaultType ? 10 : 1)
+            let currentHp = isShield
+               ? item.system.hp?.value ?? 0
+               : item.getFlag("world", "currentHp") ?? (isDefaultType ? 10 : 0)
 
             if (flagKey === "currentHp") {
                if (newValue > currentMax) newValue = currentMax
@@ -124,24 +143,35 @@ const attachDurabilityListeners = (html, entity) => {
                if (newValue < 1) newValue = 1
                span.innerText = newValue
                if (currentHp > newValue) {
-                  updates["flags.world.currentHp"] = newValue
+                  if (isShield) updates["system.hp.value"] = newValue
+                  else updates["flags.world.currentHp"] = newValue
                }
             } else if (flagKey === "hardness") {
                if (newValue < 0) newValue = 0
                span.innerText = newValue
             }
 
-            if (item.getFlag("world", "maxHp") === undefined && isDefaultType) {
-               updates["flags.world.maxHp"] =
-                  flagKey === "maxHp" ? newValue : 10
-               updates["flags.world.currentHp"] =
-                  flagKey === "currentHp" ? newValue : 10
-               updates["flags.world.hardness"] =
-                  flagKey === "hardness" ? newValue : 5
-            }
+            if (isShield) {
+               if (flagKey === "currentHp")
+                  updates["system.hp.value"] = newValue
+               if (flagKey === "maxHp") updates["system.hp.max"] = newValue
+               if (flagKey === "hardness") updates["system.hardness"] = newValue
+            } else {
+               if (
+                  item.getFlag("world", "maxHp") === undefined &&
+                  isDefaultType
+               ) {
+                  updates["flags.world.maxHp"] =
+                     flagKey === "maxHp" ? newValue : 10
+                  updates["flags.world.currentHp"] =
+                     flagKey === "currentHp" ? newValue : 10
+                  updates["flags.world.hardness"] =
+                     flagKey === "hardness" ? newValue : 5
+               }
 
-            if (item.getFlag("world", flagKey) !== newValue) {
-               updates[`flags.world.${flagKey}`] = newValue
+               if (item.getFlag("world", flagKey) !== newValue) {
+                  updates[`flags.world.${flagKey}`] = newValue
+               }
             }
 
             if (Object.keys(updates).length > 0) {
@@ -189,25 +219,49 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    if (game.user.id !== userId) return
    if (!physicalTypes.includes(item.type)) return
 
-   let isDefaultType = item.type === "armor" || item.type === "weapon"
-   let oldMax = item.getFlag("world", "maxHp") || (isDefaultType ? 10 : 1)
-   let oldHp = item.getFlag("world", "currentHp") ?? (isDefaultType ? 10 : 0)
+   let isShield = item.type === "shield"
+   let isDefaultType =
+      item.type === "armor" || item.type === "weapon" || isShield
+   let oldMax = isShield
+      ? item.system.hp?.max ?? 1
+      : item.getFlag("world", "maxHp") || (isDefaultType ? 10 : 1)
+   let oldHp = isShield
+      ? item.system.hp?.value ?? 0
+      : item.getFlag("world", "currentHp") ?? (isDefaultType ? 10 : 0)
 
    options.aztecOldHp = oldHp
    options.aztecOldMax = oldMax
 
-   let newMax = changes.flags?.world?.maxHp ?? oldMax
-   let newHp = changes.flags?.world?.currentHp ?? oldHp
+   let newMax = isShield
+      ? changes.system?.hp?.max ?? oldMax
+      : changes.flags?.world?.maxHp ?? oldMax
+   let newHp = isShield
+      ? changes.system?.hp?.value ?? oldHp
+      : changes.flags?.world?.currentHp ?? oldHp
 
    if (newHp > newMax) {
       newHp = newMax
-      changes.flags = changes.flags || {}
-      changes.flags.world = changes.flags.world || {}
-      changes.flags.world.currentHp = newMax
+      if (isShield) {
+         changes.system = changes.system || {}
+         changes.system.hp = changes.system.hp || {}
+         changes.system.hp.value = newMax
+      } else {
+         changes.flags = changes.flags || {}
+         changes.flags.world = changes.flags.world || {}
+         changes.flags.world.currentHp = newMax
+      }
    }
 
-   let wasBroken = oldMax > 0 && oldHp <= Math.floor(oldMax / 2)
-   let isBroken = newMax > 0 && newHp <= Math.floor(newMax / 2)
+   let threshold = isShield
+      ? item.system.hp?.brokenThreshold ?? Math.floor(newMax / 2)
+      : Math.floor(newMax / 2)
+   let wasBroken =
+      oldMax > 0 &&
+      oldHp <=
+         (isShield
+            ? item.system.hp?.brokenThreshold ?? Math.floor(oldMax / 2)
+            : Math.floor(oldMax / 2))
+   let isBroken = newMax > 0 && newHp <= threshold
 
    if (newHp === 0) {
       if (changes.system?.equipped) {
@@ -234,6 +288,7 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    }
 
    if (item.actor && item.actor.type === "npc") return
+   if (isShield) return
 
    let rules = foundry.utils.duplicate(item.system.rules || [])
    let rulesChanged = false
@@ -545,8 +600,10 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
    )
 
    physicalItems.forEach((item) => {
+      let isShield = item.type === "shield"
+      let isDefaultType =
+         item.type === "armor" || item.type === "weapon" || isShield
       let maxHpFlag = item.getFlag("world", "maxHp")
-      let isDefaultType = item.type === "armor" || item.type === "weapon"
       let hasDurability = maxHpFlag !== undefined
 
       let itemRow = html.find(`[data-item-id="${item.id}"]`)
@@ -557,16 +614,20 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
       }
 
       if (isDefaultType || hasDurability) {
-         let currentHp =
-            isDefaultType && !hasDurability
-               ? 10
-               : item.getFlag("world", "currentHp") ?? 0
-         let maxHp = isDefaultType && !hasDurability ? 10 : maxHpFlag ?? 0
-         let hardness =
-            isDefaultType && !hasDurability
-               ? 5
-               : item.getFlag("world", "hardness") ?? 0
-         let threshold = Math.floor(maxHp / 2)
+         let currentHp = isShield
+            ? item.system.hp?.value ?? 0
+            : item.getFlag("world", "currentHp") ??
+              (isDefaultType && !hasDurability ? 10 : 0)
+         let maxHp = isShield
+            ? item.system.hp?.max ?? 0
+            : maxHpFlag ?? (isDefaultType && !hasDurability ? 10 : 0)
+         let hardness = isShield
+            ? item.system.hardness ?? 0
+            : item.getFlag("world", "hardness") ??
+              (isDefaultType && !hasDurability ? 5 : 0)
+         let threshold = isShield
+            ? item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2)
+            : Math.floor(maxHp / 2)
 
          if (showInventoryUI) {
             let displayString = `
@@ -585,12 +646,17 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
 
             nameElement.append(displayString)
 
-            let mButton = `<a class="assign-material" data-item-id="${item.id}" title="Assign Material" style="margin-right: 8px; font-size: 1.1em;"><i class="fa-solid fa-m"></i></a>`
+            let mButton = isShield
+               ? ""
+               : `<a class="assign-material" data-item-id="${item.id}" title="Assign Material" style="margin-right: 8px; font-size: 1.1em;"><i class="fa-solid fa-m"></i></a>`
             let carryToggle = itemRow.find(".item-carry-type")
-            if (carryToggle.length > 0) {
-               carryToggle.before(mButton)
-            } else {
-               itemRow.find(".item-controls").prepend(mButton)
+
+            if (mButton) {
+               if (carryToggle.length > 0) {
+                  carryToggle.before(mButton)
+               } else {
+                  itemRow.find(".item-controls").prepend(mButton)
+               }
             }
          }
 

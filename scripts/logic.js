@@ -1,18 +1,40 @@
 import { armorPropertyMap, weaponPropertyMap } from "./constants.js"
 
 export const processItemDamage = async (item, damage, ignoreHardness) => {
-   let isDefaultType = item.type === "armor" || item.type === "weapon"
+   let isShield = item.type === "shield"
+   let isDefaultType =
+      item.type === "armor" || item.type === "weapon" || isShield
    let hasFlags = item.getFlag("world", "maxHp") !== undefined
-   let currentHp = hasFlags
+
+   let currentHp = isShield
+      ? item.system.hp?.value ?? 0
+      : hasFlags
       ? item.getFlag("world", "currentHp")
       : isDefaultType
       ? 10
       : 0
-   let hardness = hasFlags
+   let hardness = isShield
+      ? item.system.hardness ?? 0
+      : hasFlags
       ? item.getFlag("world", "hardness")
       : isDefaultType
       ? 5
       : 0
+
+   const applyDamage = async (finalDamage) => {
+      let newHp = Math.max(0, currentHp - finalDamage)
+      let updates = {}
+      if (isShield) {
+         updates["system.hp.value"] = newHp
+      } else {
+         updates["flags.world.currentHp"] = newHp
+         if (!hasFlags) {
+            updates["flags.world.maxHp"] = 10
+            updates["flags.world.hardness"] = 5
+         }
+      }
+      await item.update(updates)
+   }
 
    if (ignoreHardness) {
       new Dialog({
@@ -47,13 +69,7 @@ export const processItemDamage = async (item, damage, ignoreHardness) => {
                   let ignored = parseInt(html.find("#ignored-val").val()) || 0
                   let effectiveHardness = Math.max(0, hardness - ignored)
                   let finalDamage = Math.max(0, damage - effectiveHardness)
-                  let newHp = Math.max(0, currentHp - finalDamage)
-                  let updates = { "flags.world.currentHp": newHp }
-                  if (!hasFlags) {
-                     updates["flags.world.maxHp"] = 10
-                     updates["flags.world.hardness"] = 5
-                  }
-                  await item.update(updates)
+                  await applyDamage(finalDamage)
                },
             },
          },
@@ -61,13 +77,7 @@ export const processItemDamage = async (item, damage, ignoreHardness) => {
       }).render(true)
    } else {
       let finalDamage = Math.max(0, damage - hardness)
-      let newHp = Math.max(0, currentHp - finalDamage)
-      let updates = { "flags.world.currentHp": newHp }
-      if (!hasFlags) {
-         updates["flags.world.maxHp"] = 10
-         updates["flags.world.hardness"] = 5
-      }
-      await item.update(updates)
+      await applyDamage(finalDamage)
    }
 }
 
@@ -80,7 +90,7 @@ export const applyNPCArmorPenalties = async (item, choices) => {
          selector: "ac",
          value: choices.acPenalty,
          slug: "broken-armor-penalty",
-         label: `Broken Armour`,
+         label: `Broken Armor`,
       })
    }
 
@@ -147,86 +157,48 @@ export const applyNPCWeaponPenalties = async (item, choices) => {
    let linkedStrikes = item.actor.items.filter(
       (i) => i.type === "melee" && i.flags?.pf2e?.linkedWeapon === item.id
    )
-   let needsRecreation =
-      (choices.suppressStriking && choices.strikingVal > 0) ||
-      choices.activeProps.length > 0
-   let currentStrikeIds = linkedStrikes.map((s) => s.id)
-   let strikeBackups = []
-   let newStrikesData = []
-
-   if (needsRecreation && linkedStrikes.length > 0) {
-      for (let strike of linkedStrikes) {
-         strikeBackups.push(strike.toObject())
-         let newData = strike.toObject()
-         newData.name = `Broken ${newData.name}`
-
-         let sDamageRolls = newData.system.damageRolls || {}
-
-         if (choices.suppressStriking && choices.strikingVal > 0) {
-            for (let key in sDamageRolls) {
-               if (sDamageRolls[key].damage) {
-                  sDamageRolls[key].damage = sDamageRolls[key].damage.replace(
-                     /(\d+)d(\d+)/,
-                     (match, p1, p2) => {
-                        let newDice = Math.max(
-                           1,
-                           parseInt(p1) - choices.strikingVal
-                        )
-                        return `${newDice}d${p2}`
-                     }
-                  )
-               }
-            }
-         }
-
-         choices.activeProps.forEach((prop) => {
-            let map = weaponPropertyMap[prop]
-            for (let key in sDamageRolls) {
-               if (sDamageRolls[key].damageType === map.element) {
-                  delete sDamageRolls[key]
-               }
-            }
-         })
-
-         newData.system.damageRolls = sDamageRolls
-         newStrikesData.push(newData)
-      }
-
-      await item.actor.deleteEmbeddedDocuments("Item", currentStrikeIds)
-      let createdStrikes = await item.actor.createEmbeddedDocuments(
-         "Item",
-         newStrikesData
-      )
-      currentStrikeIds = createdStrikes.map((s) => s.id)
-
-      await item.update({
-         "flags.world.strikeBackups": strikeBackups,
-         "flags.world.brokenStrikeIds": currentStrikeIds,
-      })
-   }
-
+   let strikeIds = linkedStrikes.map((s) => "item:id:" + s.id)
+   let predicate = strikeIds.length > 0 ? [{ or: strikeIds }] : []
    let rules = []
-   let predicate = currentStrikeIds.map((id) => `item:id:${id}`)
-   if (predicate.length > 0) predicate = [{ or: predicate }]
 
-   if (choices.wPenalty !== 0 && predicate.length > 0) {
+   if (choices.wPenalty !== 0) {
       rules.push({
          key: "FlatModifier",
-         selector: "attack",
+         selector: ["attack", "damage"],
          value: choices.wPenalty,
          predicate: predicate,
-         slug: `broken-weapon-atk`,
-         label: `Broken Weapon`,
-      })
-      rules.push({
-         key: "FlatModifier",
-         selector: "damage",
-         value: choices.wPenalty,
-         predicate: predicate,
-         slug: `broken-weapon-dmg`,
+         slug: `broken-weapon-penalty`,
          label: `Broken Weapon`,
       })
    }
+
+   if (choices.suppressStriking && choices.strikingVal > 0) {
+      rules.push({
+         key: "DamageAlteration",
+         mode: "add",
+         property: "dice-number",
+         selectors: ["strike-damage"],
+         value: -choices.strikingVal,
+         predicate: predicate,
+         slug: `broken-striking-rune`,
+         label: `Broken Striking Rune`,
+      })
+   }
+
+   choices.activeProps.forEach((prop) => {
+      let map = weaponPropertyMap[prop]
+      if (map && map.element) {
+         rules.push({
+            key: "DamageDice",
+            selector: "strike-damage",
+            damageType: map.element,
+            diceNumber: -1,
+            predicate: predicate,
+            slug: `broken-${prop}-rune`,
+            label: `Broken ${prop} Rune`,
+         })
+      }
+   })
 
    let effectData = {
       name: `Broken ${item.name}`,
@@ -253,22 +225,5 @@ export const removeNPCWeaponPenalties = async (item) => {
    let ids = effects.map((e) => e.id)
    if (ids.length > 0) {
       await item.actor.deleteEmbeddedDocuments("Item", ids)
-   }
-
-   let strikeBackups = item.getFlag("world", "strikeBackups")
-   let brokenStrikeIds = item.getFlag("world", "brokenStrikeIds")
-
-   if (strikeBackups && brokenStrikeIds) {
-      let toDelete = brokenStrikeIds.filter((id) => item.actor.items.has(id))
-      if (toDelete.length > 0) {
-         await item.actor.deleteEmbeddedDocuments("Item", toDelete)
-      }
-
-      await item.actor.createEmbeddedDocuments("Item", strikeBackups)
-
-      await item.update({
-         "flags.world.-=strikeBackups": null,
-         "flags.world.-=brokenStrikeIds": null,
-      })
    }
 }
