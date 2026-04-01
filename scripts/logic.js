@@ -38,19 +38,25 @@ export const processItemDamage = async (item, damage, ignoreHardness) => {
 
    if (ignoreHardness) {
       new Dialog({
-         title: "Ignore Hardness",
+         title: game.i18n.localize(
+            "pf2e-aztecs-sundered.dialog.ignore-hardness.title"
+         ),
          content: `
                 <div class="form-group">
-                    <label>Amount of Hardness to ignore:</label>
+                    <label>${game.i18n.localize(
+                       "pf2e-aztecs-sundered.dialog.ignore-hardness.amount-to-ignore"
+                    )}:</label>
                     <div class="form-fields">
                         <input type="number" id="ignored-val" value="0" autofocus>
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 10px; font-size: 1.1em;">
-                    Projected Damage to HP: <strong id="dynamic-damage-preview">${Math.max(
-                       0,
-                       damage - hardness
-                    )}</strong>
+                    ${game.i18n.localize(
+                       "pf2e-aztecs-sundered.dialog.ignore-hardness.damage-to-hp"
+                    )}: <strong id="dynamic-damage-preview">${Math.max(
+            0,
+            damage - hardness
+         )}</strong>
                 </div>
             `,
          render: (html) => {
@@ -64,7 +70,7 @@ export const processItemDamage = async (item, damage, ignoreHardness) => {
          buttons: {
             apply: {
                icon: '<i class="fa-solid fa-hammer-crash"></i>',
-               label: "Strike",
+               label: "PF2E.WeaponStrikeLabel",
                callback: async (html) => {
                   let ignored = parseInt(html.find("#ignored-val").val()) || 0
                   let effectiveHardness = Math.max(0, hardness - ignored)
@@ -90,7 +96,9 @@ export const applyNPCArmorPenalties = async (item, choices) => {
          selector: "ac",
          value: choices.acPenalty,
          slug: "broken-armor-penalty",
-         label: `Broken Armor`,
+         label: game.i18n.localize(
+            "pf2e-aztecs-sundered.rule-elements.broken.armor"
+         ),
       })
    }
 
@@ -100,7 +108,9 @@ export const applyNPCArmorPenalties = async (item, choices) => {
          selector: "saving-throw",
          value: -choices.resilientVal,
          slug: "broken-resilient",
-         label: `Broken Resilient Rune`,
+         label: game.i18n.localize(
+            "pf2e-aztecs-sundered.rule-elements.broken.resilient-rune"
+         ),
       })
    }
 
@@ -112,7 +122,10 @@ export const applyNPCArmorPenalties = async (item, choices) => {
             selector: map.skill,
             value: map.value,
             slug: `broken-${prop}`,
-            label: `Broken ${prop} Rune`,
+            label: game.i18n.format(
+               "pf2e-aztecs-sundered.rule-elements.broken.other-rune",
+               { type: prop }
+            ),
          })
       } else if (map.type === "resistance") {
          rules.push({
@@ -120,18 +133,26 @@ export const applyNPCArmorPenalties = async (item, choices) => {
             type: map.element,
             value: Math.abs(map.value),
             slug: `broken-${prop}`,
-            label: `Broken ${prop} Rune`,
+            label: game.i18n.format(
+               "pf2e-aztecs-sundered.rule-elements.broken.other-rune",
+               { type: prop }
+            ),
          })
       }
    })
 
    let effectData = {
-      name: `Broken ${item.name}`,
+      name: game.i18n.format("pf2e-aztecs-sundered.broken-effect.label", {
+         itemName: item.name,
+      }),
       type: "effect",
       img: item.img || "icons/svg/hazard.svg",
       system: {
          description: {
-            value: `Mechanical penalties applied for a broken ${item.name}.`,
+            value: game.i18n.format(
+               "pf2e-aztecs-sundered.broken-effect.description",
+               { itemName: item.name }
+            ),
          },
          rules: rules,
       },
@@ -168,7 +189,9 @@ export const applyNPCWeaponPenalties = async (item, choices) => {
          value: choices.wPenalty,
          predicate: predicate,
          slug: `broken-weapon-penalty`,
-         label: `Broken Weapon`,
+         label: game.i18n.localize(
+            "pf2e-aztecs-sundered.rule-elements.broken.weapon"
+         ),
       })
    }
 
@@ -181,7 +204,9 @@ export const applyNPCWeaponPenalties = async (item, choices) => {
          value: -choices.strikingVal,
          predicate: predicate,
          slug: `broken-striking-rune`,
-         label: `Broken Striking Rune`,
+         label: game.i18n.localize(
+            "pf2e-aztecs-sundered.rule-elements.broken.striking-rune"
+         ),
       })
    }
 
@@ -195,18 +220,26 @@ export const applyNPCWeaponPenalties = async (item, choices) => {
             diceNumber: -1,
             predicate: predicate,
             slug: `broken-${prop}-rune`,
-            label: `Broken ${prop} Rune`,
+            label: game.i18n.format(
+               "pf2e-aztecs-sundered.rule-elements.broken.other-rune",
+               { type: prop }
+            ),
          })
       }
    })
 
    let effectData = {
-      name: `Broken ${item.name}`,
+      name: game.i18n.format("pf2e-aztecs-sundered.broken-effect.label", {
+         itemName: item.name,
+      }),
       type: "effect",
       img: item.img || "icons/svg/hazard.svg",
       system: {
          description: {
-            value: `Mechanical penalties applied for a broken ${item.name}.`,
+            value: game.i18n.format(
+               "pf2e-aztecs-sundered.broken-effect.description",
+               { itemName: item.name }
+            ),
          },
          rules: rules,
       },

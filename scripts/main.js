@@ -26,7 +26,13 @@ const buildDurabilityHTML = (item, isSheet = false) => {
 
    if (!isDefaultType && !hasDurability) {
       return `<div class="aztec-durability-summary" style="${containerStyle} text-align: center;">
-            <a class="add-durability" data-item-id="${item.id}" title="Track Durability"><i class="fa-solid fa-shield-exclamation"></i> Track Durability</a>
+            <a class="add-durability" data-item-id="${
+               item.id
+            }" title="${game.i18n.localize(
+         "pf2e-aztecs-sundered.sheet-text.track-durability"
+      )}"><i class="fa-solid fa-shield-exclamation"></i> ${game.i18n.localize(
+         "pf2e-aztecs-sundered.sheet-text.track-durability"
+      )}</a>
         </div>`
    }
 
@@ -50,28 +56,72 @@ const buildDurabilityHTML = (item, isSheet = false) => {
       : Math.floor(maxHp / 2)
 
    let ignoreLabel = isSheet
-      ? `<label style="display:flex; align-items:center; gap: 4px; font-size: 0.9em; cursor: pointer; margin: 0;"><input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" style="margin: 0; width: 14px; height: 14px;"> Ignore Hardness</label>`
-      : `<input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" title="Ignore Hardness" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">`
+      ? `<label style="display:flex; align-items:center; gap: 4px; font-size: 0.9em; cursor: pointer; margin: 0;"><input type="checkbox" class="inv-ignore-box" data-item-id="${
+           item.id
+        }" style="margin: 0; width: 14px; height: 14px;"> ${game.i18n.localize(
+           "pf2e-aztecs-sundered.sheet-text.ignore-hardness"
+        )}</label>`
+      : `<input type="checkbox" class="inv-ignore-box" data-item-id="${
+           item.id
+        }" title="${game.i18n.localize(
+           "pf2e-aztecs-sundered.sheet-text.ignore-hardness"
+        )}" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">`
 
    let assignMaterialMarkup = isShield
       ? ""
-      : `<a class="assign-material" data-item-id="${item.id}" title="Assign Material"><i class="fa-solid fa-m"></i> Assign Material</a>`
+      : `<a class="assign-material" data-item-id="${
+           item.id
+        }" title="${game.i18n.localize(
+           "pf2e-aztecs-sundered.dialog.material.title"
+        )}"><i class="fa-solid fa-m"></i> ${game.i18n.localize(
+           "pf2e-aztecs-sundered.dialog.material.title"
+        )}</a>`
+
+   let hpLabel = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hp")
+   let statusText = ""
+   if (maxHp > 0) {
+      if (currentHp <= 0) {
+         statusText = ` (${game.i18n.localize(
+            "pf2e-aztecs-sundered.status.destroyed"
+         )})`
+      } else if (currentHp <= threshold) {
+         statusText = ` (${game.i18n.localize(
+            "pf2e-aztecs-sundered.status.broken"
+         )})`
+      }
+   }
 
    return `
         <div class="aztec-durability-summary" style="${containerStyle}">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
                 <span style="display: flex; align-items: center; gap: 12px;">
-                    <span>HP: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / <span class="durability-edit" data-item-id="${item.id}" data-flag-key="maxHp" contenteditable="true">${maxHp}</span></span>
+                    <span>${hpLabel}${statusText}: <span class="durability-edit" data-item-id="${
+      item.id
+   }" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / <span class="durability-edit" data-item-id="${
+      item.id
+   }" data-flag-key="maxHp" contenteditable="true">${maxHp}</span></span>
                     <span style="display: flex; align-items: center; gap: 6px;">
-                        <a class="damage-hammer inv-hammer" data-item-id="${item.id}" title="Strike Item"><i class="fa-solid fa-hammer-crash"></i></a>
-                        <span class="inv-damage-edit" data-item-id="${item.id}" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="Damage Amount">0</span>
+                        <a class="damage-hammer inv-hammer" data-item-id="${
+                           item.id
+                        }" title="${game.i18n.localize(
+      "pf2e-aztecs-sundered.sheet-text.strike-item"
+   )}"><i class="fa-solid fa-hammer-crash"></i></a>
+                        <span class="inv-damage-edit" data-item-id="${
+                           item.id
+                        }" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="${game.i18n.localize(
+      "pf2e-aztecs-sundered.sheet-text.damage-amt"
+   )}">0</span>
                         ${ignoreLabel}
                     </span>
                 </span>
                 ${assignMaterialMarkup}
             </div>
             <div>
-                <span>Hardness: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="hardness" contenteditable="true">${hardness}</span> (BT: ${threshold})</span>
+                <span>${game.i18n.localize(
+                   "pf2e-aztecs-sundered.sheet-text.hardness"
+                )}: <span class="durability-edit" data-item-id="${
+      item.id
+   }" data-flag-key="hardness" contenteditable="true">${hardness}</span> (BT: ${threshold})</span>
             </div>
         </div>
     `
@@ -272,7 +322,10 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
          let allowedTypes = ["dropped", "stowed", "worn"]
          if (!allowedTypes.includes(newCarry) || newInSlot === true) {
             ui.notifications.warn(
-               `${item.name} is destroyed and cannot be equipped.`
+               game.i18n.format(
+                  "pf2e-aztecs-sundered.notifications.cant-equip",
+                  { itemName: item.name }
+               )
             )
             delete changes.system.equipped
          }
@@ -325,7 +378,9 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
                selector: "ac",
                value: penalty,
                slug: "broken-armour-penalty",
-               label: "Broken Armour",
+               label: game.i18n.localize(
+                  "pf2e-aztecs-sundered.rule-elements.broken.armor"
+               ),
             })
             rulesChanged = true
          } else if (rules[brokenRuleIndex].value !== penalty) {
@@ -363,7 +418,9 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
                type: "item",
                value: penalty,
                slug: "broken-weapon-attack",
-               label: "Broken Weapon",
+               label: game.i18n.localize(
+                  "pf2e-aztecs-sundered.rule-elements.broken.weapon"
+               ),
             })
             rulesChanged = true
          } else if (rules[atkRuleIndex].value !== penalty) {
@@ -377,7 +434,9 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
                type: "item",
                value: penalty,
                slug: "broken-weapon-damage",
-               label: "Broken Weapon",
+               label: game.i18n.localize(
+                  "pf2e-aztecs-sundered.rule-elements.broken.weapon"
+               ),
             })
             rulesChanged = true
          } else if (rules[dmgRuleIndex].value !== penalty) {
@@ -599,6 +658,9 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
       "showInventoryUI"
    )
 
+   let hpShort = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hp-short")
+   let hdShort = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hd-short")
+
    physicalItems.forEach((item) => {
       let isShield = item.type === "shield"
       let isDefaultType =
@@ -632,14 +694,32 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
          if (showInventoryUI) {
             let displayString = `
                     <span style="font-size: 0.85em; color: grey; margin-left: 8px; display: inline-flex; align-items: center;">
-                        (HP: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / 
-                        <span class="durability-edit" data-item-id="${item.id}" data-flag-key="maxHp" contenteditable="true">${maxHp}</span> | 
-                        HD: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="hardness" contenteditable="true">${hardness}</span>)
+                        (${hpShort}: <span class="durability-edit" data-item-id="${
+               item.id
+            }" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / 
+                        <span class="durability-edit" data-item-id="${
+                           item.id
+                        }" data-flag-key="maxHp" contenteditable="true">${maxHp}</span> | 
+                        ${hdShort}: <span class="durability-edit" data-item-id="${
+               item.id
+            }" data-flag-key="hardness" contenteditable="true">${hardness}</span>)
                         
                         <span style="margin-left: 14px; display: inline-flex; align-items: center; gap: 6px;">
-                            <a class="damage-hammer inv-hammer" data-item-id="${item.id}" title="Strike Item"><i class="fa-solid fa-hammer-crash"></i></a>
-                            <span class="inv-damage-edit" data-item-id="${item.id}" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="Damage Amount">0</span>
-                            <input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" title="Ignore Hardness" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">
+                            <a class="damage-hammer inv-hammer" data-item-id="${
+                               item.id
+                            }" title="${game.i18n.localize(
+               "pf2e-aztecs-sundered.sheet-text.strike-item"
+            )}"><i class="fa-solid fa-hammer-crash"></i></a>
+                            <span class="inv-damage-edit" data-item-id="${
+                               item.id
+                            }" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="${game.i18n.localize(
+               "pf2e-aztecs-sundered.sheet-text.damage-amt"
+            )}">0</span>
+                            <input type="checkbox" class="inv-ignore-box" data-item-id="${
+                               item.id
+                            }" title="${game.i18n.localize(
+               "pf2e-aztecs-sundered.sheet-text.ignore-hardness"
+            )}" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">
                         </span>
                     </span>
                 `
@@ -648,7 +728,11 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
 
             let mButton = isShield
                ? ""
-               : `<a class="assign-material" data-item-id="${item.id}" title="Assign Material" style="margin-right: 8px; font-size: 1.1em;"><i class="fa-solid fa-m"></i></a>`
+               : `<a class="assign-material" data-item-id="${
+                    item.id
+                 }" title="${game.i18n.localize(
+                    "pf2e-aztecs-sundered.dialog.material.title"
+                 )}" style="margin-right: 8px; font-size: 1.1em;"><i class="fa-solid fa-m"></i></a>`
             let carryToggle = itemRow.find(".item-carry-type")
 
             if (mButton) {
@@ -662,16 +746,24 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
 
          if (maxHp > 0) {
             if (currentHp <= 0) {
-               let skullIcon = `<i class="fa-solid fa-skull" style="color: #555; margin-right: 6px;" title="Destroyed"></i>`
+               let skullIcon = `<i class="fa-solid fa-skull" style="color: #555; margin-right: 6px;" title="${game.i18n.localize(
+                  "pf2e-aztecs-sundered.status.destroyed"
+               )}"></i>`
                nameElement.prepend(skullIcon)
                itemRow.css({ opacity: "0.5", filter: "grayscale(100%)" })
             } else if (currentHp <= threshold) {
-               let brokenIcon = `<i class="fa-solid fa-heart-crack" style="color: #a83232; margin-right: 6px;" title="Broken"></i>`
+               let brokenIcon = `<i class="fa-solid fa-heart-crack" style="color: #a83232; margin-right: 6px;" title="${game.i18n.localize(
+                  "pf2e-aztecs-sundered.status.broken"
+               )}"></i>`
                nameElement.prepend(brokenIcon)
             }
          }
       } else if (showInventoryUI) {
-         let addIcon = `<a class="add-durability" data-item-id="${item.id}" title="Track Durability"><i class="fa-solid fa-shield-exclamation"></i></a>`
+         let addIcon = `<a class="add-durability" data-item-id="${
+            item.id
+         }" title="${game.i18n.localize(
+            "pf2e-aztecs-sundered.sheet-text.track-durability"
+         )}"><i class="fa-solid fa-shield-exclamation"></i></a>`
          nameElement.append(addIcon)
       }
    })

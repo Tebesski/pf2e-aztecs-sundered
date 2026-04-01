@@ -5,18 +5,28 @@ import {
 } from "./constants.js"
 
 export const openMaterialDialog = (item, isNew) => {
+   let hpLabel = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hp-short")
+   let hdLabel = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hd-short")
+   let btLabel = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.bt-short")
+
    let options = Object.entries(materialStats)
-      .map(
-         ([k, v]) =>
-            `<option value="${k}">${v.name} (HD: ${v.hd} | HP: ${
-               v.hp
-            } | BT: ${Math.floor(v.hp / 2)})</option>`
-      )
+      .map(([k, v]) => {
+         let matName = game.i18n.localize(
+            `pf2e-aztecs-sundered.material-stats.${k}.name`
+         )
+         return `<option value="${k}">${matName} (${hdLabel}: ${
+            v.hd
+         } | ${hpLabel}: ${v.hp} | ${btLabel}: ${Math.floor(
+            v.hp / 2
+         )})</option>`
+      })
       .join("")
 
    let content = `
         <div class="form-group">
-            <label>Select Material</label>
+            <label>${game.i18n.localize(
+               "pf2e-aztecs-sundered.dialog.material.select"
+            )}</label>
             <div class="form-fields">
                 <select id="mat-select" style="width: 100%;">${options}</select>
             </div>
@@ -25,14 +35,21 @@ export const openMaterialDialog = (item, isNew) => {
     `
 
    new Dialog({
-      title: `Assign Material`,
+      title: game.i18n.localize("pf2e-aztecs-sundered.dialog.material.title"),
       content: content,
       render: (html) => {
          const select = html.find("#mat-select")
          const desc = html.find("#mat-desc")
          const updateDesc = () => {
             let key = select.val()
-            desc.text("Common examples: " + materialStats[key].examples)
+            let examples = game.i18n.localize(
+               `pf2e-aztecs-sundered.material-stats.${key}.examples`
+            )
+            desc.text(
+               `${game.i18n.localize(
+                  "pf2e-aztecs-sundered.dialog.material.common-examples"
+               )}: ` + examples
+            )
          }
          select.on("change", updateDesc)
          updateDesc()
@@ -40,7 +57,9 @@ export const openMaterialDialog = (item, isNew) => {
       buttons: {
          apply: {
             icon: '<i class="fa-solid fa-hammer"></i>',
-            label: "Apply Material",
+            label: game.i18n.localize(
+               "pf2e-aztecs-sundered.dialog.material.apply-material"
+            ),
             callback: async (html) => {
                let key = html.find("#mat-select").val()
                let mat = materialStats[key]
@@ -83,12 +102,17 @@ export const launchNPCDialog = (item) => {
    return new Promise((resolve) => {
       const isArmor = item.type === "armor"
       const runes = item.system.runes || {}
-      let content = `<div style="margin-bottom: 10px;">Select the mechanical penalties to apply to this creature for breaking their ${item.name}.</div>`
+      let content = `<div style="margin-bottom: 10px;">${game.i18n.format(
+         "pf2e-aztecs-sundered.dialog.npc.select-penalty",
+         { itemName: item.name }
+      )}.</div>`
 
       if (isArmor) {
          content += `
                 <div class="form-group">
-                    <label>AC Penalty</label>
+                    <label>${game.i18n.localize(
+                       "pf2e-aztecs-sundered.dialog.npc.penalties.ac"
+                    )}</label>
                     <div class="form-fields">
                         <input type="number" id="npc-ac-penalty" value="-2">
                     </div>
@@ -97,7 +121,9 @@ export const launchNPCDialog = (item) => {
          if (runes.resilient > 0) {
             content += `
                     <div class="form-group">
-                        <label>Suppress Resilient (+${runes.resilient})</label>
+                        <label>${game.i18n.localize(
+                           "pf2e-aztecs-sundered.dialog.npc.penalties.resilient"
+                        )} (+${runes.resilient})</label>
                         <div class="form-fields">
                             <input type="checkbox" id="npc-resilient-penalty" checked>
                         </div>
@@ -110,7 +136,9 @@ export const launchNPCDialog = (item) => {
                if (mapped) {
                   content += `
                             <div class="form-group">
-                                <label>${mapped.label}</label>
+                                <label>${game.i18n.localize(
+                                   `pf2e-aztecs-sundered.armor-property.${prop}.label`
+                                )}</label>
                                 <div class="form-fields">
                                     <input type="checkbox" class="npc-armor-prop" data-prop="${prop}" checked>
                                 </div>
@@ -122,7 +150,9 @@ export const launchNPCDialog = (item) => {
       } else {
          content += `
                 <div class="form-group">
-                    <label>Attack & Damage Penalty</label>
+                    <label>${game.i18n.localize(
+                       "pf2e-aztecs-sundered.dialog.npc.penalties.attack-damage"
+                    )}</label>
                     <div class="form-fields">
                         <input type="number" id="npc-weapon-penalty" value="-2">
                     </div>
@@ -131,7 +161,9 @@ export const launchNPCDialog = (item) => {
          if (runes.striking > 0) {
             content += `
                     <div class="form-group">
-                        <label>Suppress Striking</label>
+                        <label>${game.i18n.localize(
+                           "pf2e-aztecs-sundered.dialog.npc.penalties.striking"
+                        )}</label>
                         <div class="form-fields">
                             <input type="checkbox" id="npc-striking-penalty" checked>
                         </div>
@@ -144,7 +176,9 @@ export const launchNPCDialog = (item) => {
                if (mapped) {
                   content += `
                             <div class="form-group">
-                                <label>${mapped.label}</label>
+                                <label>${game.i18n.localize(
+                                   `pf2e-aztecs-sundered.weapon-property.${prop}.label`
+                                )}</label>
                                 <div class="form-fields">
                                     <input type="checkbox" class="npc-weapon-prop" data-prop="${prop}" checked>
                                 </div>
@@ -156,12 +190,16 @@ export const launchNPCDialog = (item) => {
       }
 
       new Dialog({
-         title: `Broken Gear: ${item.name}`,
+         title: `${game.i18n.localize(
+            "pf2e-aztecs-sundered.dialog.npc.title"
+         )}: ${item.name}`,
          content: content,
          buttons: {
             apply: {
                icon: '<i class="fas fa-check"></i>',
-               label: "Apply Penalties",
+               label: game.i18n.localize(
+                  "pf2e-aztecs-sundered.dialog.npc.apply-penalties"
+               ),
                callback: (html) => {
                   const $html = $(html[0] ?? html)
                   let activeProps = []
