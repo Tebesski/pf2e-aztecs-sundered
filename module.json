@@ -1,0 +1,23 @@
+{
+   "id": "pf2e-aztecs-sundered",
+   "title": "PF2e Aztec's Sundered",
+   "description": "A dynamic equipment durability and material tracking system for Pathfinder 2e.",
+   "version": "1.0.0",
+   "compatibility": {
+      "minimum": "13",
+      "verified": "13"
+   },
+   "authors": [
+      {
+         "name": "Aztec"
+      }
+   ],
+   "systems": [
+      {
+         "id": "pf2e",
+         "type": "system"
+      }
+   ],
+   "esmodules": ["scripts/main.js"],
+   "styles": ["styles/module.css"]
+}

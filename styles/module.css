@@ -1,0 +1,24 @@
+.durability-edit,
+.inv-damage-edit {
+   text-decoration: underline dotted;
+   cursor: text;
+}
+a.damage-hammer {
+   color: #888;
+   transition: color 0.2s ease, transform 0.1s ease;
+   cursor: pointer;
+}
+a.damage-hammer:hover {
+   color: #d9534f;
+   transform: scale(1.2);
+}
+a.add-durability {
+   color: #888;
+   margin-left: 10px;
+   cursor: pointer;
+   transition: color 0.2s ease;
+}
+a.add-durability:hover {
+   color: #5bc0de;
+   transform: scale(1.2);
+}
