@@ -189,7 +189,8 @@
          "track-durability": "Отслеживать прочность"
       },
       "notifications": {
-         "cant-equip": "Предмет {itemName} уничтожен и не может быть экипирован"
+         "cant-equip": "Предмет {itemName} уничтожен и не может быть экипирован",
+         "cant-stow": "Предмет {containerName} уничтожен и не может вмещать вещи"
       }
    }
 }

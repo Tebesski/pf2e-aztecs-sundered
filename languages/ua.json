@@ -189,7 +189,8 @@
          "track-durability": "Відстежувати міцність"
       },
       "notifications": {
-         "cant-equip": "Предмет {itemName} знищено, його не можна екіпірувати"
+         "cant-equip": "Предмет {itemName} знищено, його не можна екіпірувати",
+         "cant-stow": "Предмет {containerName} знищено, він не може вміщати речі"
       }
    }
 }

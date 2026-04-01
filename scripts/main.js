@@ -267,6 +267,30 @@ const attachDurabilityListeners = (html, entity) => {
 
 Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    if (game.user.id !== userId) return
+
+   if (changes.system && changes.system.containerId !== undefined) {
+      let newContainerId = changes.system.containerId
+      if (newContainerId !== null && item.actor) {
+         let container = item.actor.items.get(newContainerId)
+         if (container && container.type === "backpack") {
+            let maxHp = container.getFlag("world", "maxHp")
+            if (maxHp !== undefined) {
+               let currentHp = container.getFlag("world", "currentHp") ?? 0
+               let threshold = Math.floor(maxHp / 2)
+               if (currentHp <= threshold) {
+                  ui.notifications.warn(
+                     game.i18n.format(
+                        "pf2e-aztecs-sundered.notifications.cant-stow",
+                        { containerName: container.name }
+                     )
+                  )
+                  delete changes.system.containerId
+               }
+            }
+         }
+      }
+   }
+
    if (!physicalTypes.includes(item.type)) return
 
    let isShield = item.type === "shield"
@@ -597,6 +621,25 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
 
 Hooks.on("updateItem", async (item, changes, options, userId) => {
    if (game.user.id !== userId) return
+
+   if (item.type === "backpack" && item.actor) {
+      let oldHp = options.aztecOldHp
+      let newHp = item.getFlag("world", "currentHp")
+      if (oldHp > 0 && newHp === 0) {
+         const contents = item.actor.items.filter(
+            (i) => i.system.containerId === item.id
+         )
+         if (contents.length > 0) {
+            const updates = contents.map((i) => ({
+               _id: i.id,
+               "system.containerId": null,
+               "system.equipped.carryType": "dropped",
+            }))
+            await item.actor.updateEmbeddedDocuments("Item", updates)
+         }
+      }
+   }
+
    if (item.type !== "armor" && item.type !== "weapon") return
 
    if (item.actor && item.actor.type === "npc") {
@@ -631,12 +674,13 @@ Hooks.on("renderItemSheet", (app, htmlElement, data) => {
    const html = $(htmlElement[0] ?? htmlElement)
 
    let content = buildDurabilityHTML(item, true)
+
    let tab = html.find('.tab[data-tab="description"]')
+   if (tab.length === 0) tab = html.find('.tab[data-tab="details"]')
+   if (tab.length === 0) tab = html.find(".sheet-body")
 
    if (tab.length) {
       tab.prepend(content)
-   } else {
-      html.find(".sheet-body").prepend(content)
    }
 
    attachDurabilityListeners(html, item)
@@ -669,10 +713,10 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
       let hasDurability = maxHpFlag !== undefined
 
       let itemRow = html.find(`[data-item-id="${item.id}"]`)
-      let nameElement = itemRow.find(".item-name h4")
+      let nameElement = itemRow.find(".item-name h4").first()
 
       if (nameElement.length === 0) {
-         nameElement = itemRow.find(".name")
+         nameElement = itemRow.find(".name").first()
       }
 
       if (isDefaultType || hasDurability) {
@@ -733,13 +777,13 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
                  }" title="${game.i18n.localize(
                     "pf2e-aztecs-sundered.dialog.material.title"
                  )}" style="margin-right: 8px; font-size: 1.1em;"><i class="fa-solid fa-m"></i></a>`
-            let carryToggle = itemRow.find(".item-carry-type")
+            let carryToggle = itemRow.find(".item-carry-type").first()
 
             if (mButton) {
                if (carryToggle.length > 0) {
                   carryToggle.before(mButton)
                } else {
-                  itemRow.find(".item-controls").prepend(mButton)
+                  itemRow.find(".item-controls").first().prepend(mButton)
                }
             }
          }
@@ -750,7 +794,11 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
                   "pf2e-aztecs-sundered.status.destroyed"
                )}"></i>`
                nameElement.prepend(skullIcon)
-               itemRow.css({ opacity: "0.5", filter: "grayscale(100%)" })
+               nameElement.css({ opacity: "0.5", filter: "grayscale(100%)" })
+               itemRow
+                  .find(".item-image")
+                  .first()
+                  .css({ opacity: "0.5", filter: "grayscale(100%)" })
             } else if (currentHp <= threshold) {
                let brokenIcon = `<i class="fa-solid fa-heart-crack" style="color: #a83232; margin-right: 6px;" title="${game.i18n.localize(
                   "pf2e-aztecs-sundered.status.broken"

@@ -189,7 +189,8 @@
          "destroyed": "Destroyed"
       },
       "notifications": {
-         "cant-equip": "{itemName} is destroyed and cannot be equipped"
+         "cant-equip": "{itemName} is destroyed and cannot be equipped",
+         "cant-stow": "{containerName} is destroyed and cannot hold any items"
       }
    }
 }
