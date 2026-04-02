@@ -344,9 +344,12 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
          (isShield
             ? item.system.hp?.brokenThreshold ?? Math.floor(oldMax / 2)
             : Math.floor(oldMax / 2))
+
    let isBroken = newMax > 0 && newHp <= threshold
 
-   if (newHp === 0) {
+   let hasDurabilityFlags = item.getFlag("world", "maxHp") !== undefined
+
+   if (newHp === 0 && (isDefaultType || hasDurabilityFlags)) {
       if (changes.system?.equipped) {
          let newCarry =
             changes.system.equipped.carryType ?? item.system.equipped?.carryType
@@ -357,7 +360,9 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
             ui.notifications.warn(
                game.i18n.format(
                   "pf2e-aztecs-sundered.notifications.cant-equip",
-                  { itemName: item.name }
+                  {
+                     itemName: item.name,
+                  }
                )
             )
             delete changes.system.equipped
@@ -372,6 +377,8 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
          changes.system.equipped.invested = false
       }
    }
+
+   if (item.actor && item.actor.type === "npc") return
 
    if (item.actor && item.actor.type === "npc") return
    if (isShield) return

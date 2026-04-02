@@ -200,6 +200,64 @@
       "notifications": {
          "cant-equip": "{itemName} is destroyed and cannot be equipped",
          "cant-stow": "{containerName} is destroyed and cannot hold any items"
+      },
+      "settings": {
+         "showInventoryUI": {
+            "name": "Show Inventory Interface",
+            "hint": "Display the durability tracking numbers and damage controls directly on the main inventory rows."
+         },
+         "enableArmourPenalty": {
+            "name": "Enable Broken Armour Penalties",
+            "hint": "Apply a status penalty to armour class when defensive gear drops below the broken threshold."
+         },
+         "armourPenaltyLight": {
+            "name": "Light Armour Penalty",
+            "hint": "The penalty amount applied to broken light armour."
+         },
+         "armourPenaltyMedium": {
+            "name": "Medium Armour Penalty",
+            "hint": "The penalty amount applied to broken medium armour."
+         },
+         "armourPenaltyHeavy": {
+            "name": "Heavy Armour Penalty",
+            "hint": "The penalty amount applied to broken heavy armour."
+         },
+         "enableWeaponPenalty": {
+            "name": "Enable Broken Weapon Penalties",
+            "hint": "Apply an item penalty to attack and damage rolls when a weapon drops below the broken threshold."
+         },
+         "weaponPenaltyAmount": {
+            "name": "Weapon Penalty Amount",
+            "hint": "The specific numeric penalty applied to broken weapons."
+         },
+         "suppressArmourPotency": {
+            "name": "Suppress Armour Potency",
+            "hint": "Disable fundamental runes on broken armour. Note: This feature conflicts with Automatic Bonus Progression."
+         },
+         "suppressArmourResilient": {
+            "name": "Suppress Armour Resiliency",
+            "hint": "Disable resilient runes on broken armour. Automatically disabled if Potency is suppressed."
+         },
+         "suppressArmourProperty": {
+            "name": "Suppress Armour Properties",
+            "hint": "Disable property runes on broken armour. Automatically disabled if Potency is suppressed."
+         },
+         "suppressWeaponPotency": {
+            "name": "Suppress Weapon Potency",
+            "hint": "Disable fundamental runes on broken weapons. Note: This feature conflicts with Automatic Bonus Progression."
+         },
+         "suppressWeaponStriking": {
+            "name": "Suppress Weapon Striking",
+            "hint": "Disable striking runes on broken weapons. Automatically disabled if Potency is suppressed."
+         },
+         "suppressWeaponProperty": {
+            "name": "Suppress Weapon Properties",
+            "hint": "Disable property runes on broken weapons. Automatically disabled if Potency is suppressed."
+         },
+         "restrictPreciousMaterial": {
+            "name": "Restrict Precious Material Durability",
+            "hint": "Apply precious material statistics only if the base item is less durable than the material."
+         }
       }
    }
 }

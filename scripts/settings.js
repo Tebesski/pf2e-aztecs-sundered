@@ -18,8 +18,8 @@ const forceStateSync = foundry.utils.debounce(async () => {
 
 export const registerSettings = () => {
    game.settings.register("pf2e-aztecs-sundered", "showInventoryUI", {
-      name: "Show Inventory Interface",
-      hint: "Display the durability tracking numbers and damage controls directly on the main inventory rows.",
+      name: "pf2e-aztecs-sundered.settings.showInventoryUI.name",
+      hint: "pf2e-aztecs-sundered.settings.showInventoryUI.hint",
       scope: "client",
       config: true,
       type: Boolean,
@@ -28,8 +28,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "enableArmourPenalty", {
-      name: "Enable Broken Armour Penalties",
-      hint: "Apply a status penalty to armour class when defensive gear drops below the broken threshold.",
+      name: "pf2e-aztecs-sundered.settings.enableArmourPenalty.name",
+      hint: "pf2e-aztecs-sundered.settings.enableArmourPenalty.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -38,8 +38,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "armourPenaltyLight", {
-      name: "Light Armour Penalty",
-      hint: "The penalty amount applied to broken light armour.",
+      name: "pf2e-aztecs-sundered.settings.armourPenaltyLight.name",
+      hint: "pf2e-aztecs-sundered.settings.armourPenaltyLight.hint",
       scope: "world",
       config: true,
       type: Number,
@@ -48,8 +48,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "armourPenaltyMedium", {
-      name: "Medium Armour Penalty",
-      hint: "The penalty amount applied to broken medium armour.",
+      name: "pf2e-aztecs-sundered.settings.armourPenaltyMedium.name",
+      hint: "pf2e-aztecs-sundered.settings.armourPenaltyMedium.hint",
       scope: "world",
       config: true,
       type: Number,
@@ -58,8 +58,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "armourPenaltyHeavy", {
-      name: "Heavy Armour Penalty",
-      hint: "The penalty amount applied to broken heavy armour.",
+      name: "pf2e-aztecs-sundered.settings.armourPenaltyHeavy.name",
+      hint: "pf2e-aztecs-sundered.settings.armourPenaltyHeavy.hint",
       scope: "world",
       config: true,
       type: Number,
@@ -68,8 +68,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "enableWeaponPenalty", {
-      name: "Enable Broken Weapon Penalties",
-      hint: "Apply an item penalty to attack and damage rolls when a weapon drops below the broken threshold.",
+      name: "pf2e-aztecs-sundered.settings.enableWeaponPenalty.name",
+      hint: "pf2e-aztecs-sundered.settings.enableWeaponPenalty.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -78,8 +78,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "weaponPenaltyAmount", {
-      name: "Weapon Penalty Amount",
-      hint: "The specific numeric penalty applied to broken weapons.",
+      name: "pf2e-aztecs-sundered.settings.weaponPenaltyAmount.name",
+      hint: "pf2e-aztecs-sundered.settings.weaponPenaltyAmount.hint",
       scope: "world",
       config: true,
       type: Number,
@@ -88,8 +88,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "suppressArmourPotency", {
-      name: "Suppress Armour Potency",
-      hint: "Disable fundamental runes on broken armour. Note: This feature conflicts with Automatic Bonus Progression.",
+      name: "pf2e-aztecs-sundered.settings.suppressArmourPotency.name",
+      hint: "pf2e-aztecs-sundered.settings.suppressArmourPotency.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -98,8 +98,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "suppressArmourResilient", {
-      name: "Suppress Armour Resiliency",
-      hint: "Disable resilient runes on broken armour. Automatically disabled if Potency is suppressed.",
+      name: "pf2e-aztecs-sundered.settings.suppressArmourResilient.name",
+      hint: "pf2e-aztecs-sundered.settings.suppressArmourResilient.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -108,8 +108,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "suppressArmourProperty", {
-      name: "Suppress Armour Properties",
-      hint: "Disable property runes on broken armour. Automatically disabled if Potency is suppressed.",
+      name: "pf2e-aztecs-sundered.settings.suppressArmourProperty.name",
+      hint: "pf2e-aztecs-sundered.settings.suppressArmourProperty.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -118,8 +118,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "suppressWeaponPotency", {
-      name: "Suppress Weapon Potency",
-      hint: "Disable fundamental runes on broken weapons. Note: This feature conflicts with Automatic Bonus Progression.",
+      name: "pf2e-aztecs-sundered.settings.suppressWeaponPotency.name",
+      hint: "pf2e-aztecs-sundered.settings.suppressWeaponPotency.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -128,8 +128,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "suppressWeaponStriking", {
-      name: "Suppress Weapon Striking",
-      hint: "Disable striking runes on broken weapons. Automatically disabled if Potency is suppressed.",
+      name: "pf2e-aztecs-sundered.settings.suppressWeaponStriking.name",
+      hint: "pf2e-aztecs-sundered.settings.suppressWeaponStriking.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -138,8 +138,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "suppressWeaponProperty", {
-      name: "Suppress Weapon Properties",
-      hint: "Disable property runes on broken weapons. Automatically disabled if Potency is suppressed.",
+      name: "pf2e-aztecs-sundered.settings.suppressWeaponProperty.name",
+      hint: "pf2e-aztecs-sundered.settings.suppressWeaponProperty.hint",
       scope: "world",
       config: true,
       type: Boolean,
@@ -148,8 +148,8 @@ export const registerSettings = () => {
    })
 
    game.settings.register("pf2e-aztecs-sundered", "restrictPreciousMaterial", {
-      name: "Restrict Precious Material Durability",
-      hint: "Apply precious material statistics only if the base item is less durable than the material.",
+      name: "pf2e-aztecs-sundered.settings.restrictPreciousMaterial.name",
+      hint: "pf2e-aztecs-sundered.settings.restrictPreciousMaterial.hint",
       scope: "world",
       config: true,
       type: Boolean,
