@@ -34,5 +34,14 @@
    "styles": ["styles/module.css"],
    "url": "#{URL}#",
    "manifest": "#{MANIFEST}#",
-   "download": "#{DOWNLOAD}#"
+   "download": "#{DOWNLOAD}#",
+   "packs": [
+      {
+         "name": "pf2e-sundered-macros",
+         "label": "PF2e Sundered Macros",
+         "path": "packs/pf2e-sundered-macros",
+         "type": "Macro",
+         "system": "pf2e"
+      }
+   ]
 }
