@@ -140,6 +140,10 @@
          "label": "Broken {itemName}",
          "description": "Mechanical penalties applied for a broken {itemName}"
       },
+      "destroyed-effect": {
+         "label": "Destroyed: {itemName}",
+         "description": "{itemName} is completely destroyed and provides no benefits."
+      },
       "rule-elements": {
          "broken": {
             "armor": "Broken Armor",
@@ -167,7 +171,8 @@
                "ac": "AC Penalty",
                "resilient": "Suppres Resilient",
                "attack-damage": "Attack & Damage Penalty",
-               "striking": "Suppress Striking"
+               "striking": "Suppress Striking",
+               "full-destruction": "Destroyed: Apply maximum penalties"
             },
             "title": "Broken Gear",
             "apply-penalties": "Apply Penalties"
@@ -182,7 +187,11 @@
          "strike-item": "Strike Item",
          "damage-amt": "Damage Amount",
          "hardness": "Hardness",
-         "track-durability": "Track Durability"
+         "track-durability": "Track Durability",
+         "use-precious": "Apply Precious Material durability",
+         "grisantian-fire": "Is this fire damage?",
+         "grisantian-piercing": "Is this piercing or slashing damage?",
+         "dragonhide-element": "Does this match the dragon's elemental immunity?"
       },
       "status": {
          "broken": "Broken",

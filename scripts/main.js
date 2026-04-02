@@ -6,6 +6,7 @@ import {
    removeNPCArmorPenalties,
    applyNPCWeaponPenalties,
    removeNPCWeaponPenalties,
+   getDefaultDurability,
 } from "./logic.js"
 import { registerSettings } from "./settings.js"
 
@@ -19,6 +20,7 @@ const buildDurabilityHTML = (item, isSheet = false) => {
       item.type === "armor" || item.type === "weapon" || isShield
    let maxHpFlag = item.getFlag("world", "maxHp")
    let hasDurability = maxHpFlag !== undefined
+   let defaultStats = getDefaultDurability(item)
 
    let containerStyle = isSheet
       ? "grid-column: 1 / -1; width: 100%; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #7a7971; font-size: 0.9em; display: block;"
@@ -39,17 +41,17 @@ const buildDurabilityHTML = (item, isSheet = false) => {
    let currentHp = isShield
       ? item.system.hp?.value ?? 0
       : isDefaultType && !hasDurability
-      ? 10
+      ? defaultStats.maxHp
       : item.getFlag("world", "currentHp") ?? 0
    let maxHp = isShield
       ? item.system.hp?.max ?? 0
       : isDefaultType && !hasDurability
-      ? 10
+      ? defaultStats.maxHp
       : maxHpFlag ?? 0
    let hardness = isShield
       ? item.system.hardness ?? 0
       : isDefaultType && !hasDurability
-      ? 5
+      ? defaultStats.hardness
       : item.getFlag("world", "hardness") ?? 0
    let threshold = isShield
       ? item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2)
@@ -177,13 +179,16 @@ const attachDurabilityListeners = (html, entity) => {
             let isShield = item.type === "shield"
             let isDefaultType =
                item.type === "weapon" || item.type === "armor" || isShield
+            let defaultStats = getDefaultDurability(item)
 
             let currentMax = isShield
                ? item.system.hp?.max ?? 1
-               : item.getFlag("world", "maxHp") ?? (isDefaultType ? 10 : 1)
+               : item.getFlag("world", "maxHp") ??
+                 (isDefaultType ? defaultStats.maxHp : 1)
             let currentHp = isShield
                ? item.system.hp?.value ?? 0
-               : item.getFlag("world", "currentHp") ?? (isDefaultType ? 10 : 0)
+               : item.getFlag("world", "currentHp") ??
+                 (isDefaultType ? defaultStats.maxHp : 0)
 
             if (flagKey === "currentHp") {
                if (newValue > currentMax) newValue = currentMax
@@ -212,11 +217,11 @@ const attachDurabilityListeners = (html, entity) => {
                   isDefaultType
                ) {
                   updates["flags.world.maxHp"] =
-                     flagKey === "maxHp" ? newValue : 10
+                     flagKey === "maxHp" ? newValue : defaultStats.maxHp
                   updates["flags.world.currentHp"] =
-                     flagKey === "currentHp" ? newValue : 10
+                     flagKey === "currentHp" ? newValue : defaultStats.maxHp
                   updates["flags.world.hardness"] =
-                     flagKey === "hardness" ? newValue : 5
+                     flagKey === "hardness" ? newValue : defaultStats.hardness
                }
 
                if (item.getFlag("world", flagKey) !== newValue) {
@@ -296,12 +301,16 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    let isShield = item.type === "shield"
    let isDefaultType =
       item.type === "armor" || item.type === "weapon" || isShield
+   let defaultStats = getDefaultDurability(item)
+
    let oldMax = isShield
       ? item.system.hp?.max ?? 1
-      : item.getFlag("world", "maxHp") || (isDefaultType ? 10 : 1)
+      : item.getFlag("world", "maxHp") ||
+        (isDefaultType ? defaultStats.maxHp : 1)
    let oldHp = isShield
       ? item.system.hp?.value ?? 0
-      : item.getFlag("world", "currentHp") ?? (isDefaultType ? 10 : 0)
+      : item.getFlag("world", "currentHp") ??
+        (isDefaultType ? defaultStats.maxHp : 0)
 
    options.aztecOldHp = oldHp
    options.aztecOldMax = oldMax
@@ -624,8 +633,9 @@ Hooks.on("updateItem", async (item, changes, options, userId) => {
 
    if (item.type === "backpack" && item.actor) {
       let oldHp = options.aztecOldHp
-      let newHp = item.getFlag("world", "currentHp")
-      if (oldHp > 0 && newHp === 0) {
+      let newHp =
+         changes.flags?.world?.currentHp ?? item.getFlag("world", "currentHp")
+      if (oldHp > 0 && newHp <= 0) {
          const contents = item.actor.items.filter(
             (i) => i.system.containerId === item.id
          )
@@ -642,23 +652,80 @@ Hooks.on("updateItem", async (item, changes, options, userId) => {
 
    if (item.type !== "armor" && item.type !== "weapon") return
 
+   let expanded = foundry.utils.expandObject(changes)
+   let materialChanged = expanded.system?.material !== undefined
+   let toggleChanged = expanded.flags?.world?.usePreciousMaterial !== undefined
+   let baseItemChanged = expanded.system?.baseItem !== undefined
+   let assignedMatChanged =
+      expanded.flags?.world?.assignedMaterial !== undefined
+
+   if (
+      materialChanged ||
+      toggleChanged ||
+      baseItemChanged ||
+      assignedMatChanged
+   ) {
+      let defaultStats = getDefaultDurability(item)
+      let oldMax = options.aztecOldMax || 1
+      let currentHp = item.getFlag("world", "currentHp") ?? defaultStats.maxHp
+
+      let newMax = defaultStats.maxHp
+      let newCur = Math.round((currentHp / oldMax) * newMax)
+      if (isNaN(newCur) || newCur < 0) newCur = newMax
+
+      if (
+         item.getFlag("world", "maxHp") !== newMax ||
+         item.getFlag("world", "hardness") !== defaultStats.hardness
+      ) {
+         await item.update({
+            "flags.world.maxHp": newMax,
+            "flags.world.currentHp": newCur,
+            "flags.world.hardness": defaultStats.hardness,
+         })
+      }
+   }
+
    if (item.actor && item.actor.type === "npc") {
       let isDefaultType = item.type === "armor" || item.type === "weapon"
-      let oldMax = options.aztecOldMax ?? (isDefaultType ? 10 : 1)
-      let oldHp = options.aztecOldHp ?? (isDefaultType ? 10 : 0)
-      let newMax = item.getFlag("world", "maxHp") ?? oldMax
-      let newHp = item.getFlag("world", "currentHp") ?? oldHp
+      let defaultStats = getDefaultDurability(item)
+      let oldMax =
+         options.aztecOldMax ?? (isDefaultType ? defaultStats.maxHp : 1)
+      let oldHp = options.aztecOldHp ?? (isDefaultType ? defaultStats.maxHp : 0)
+
+      let newMax =
+         changes.flags?.world?.maxHp ?? item.getFlag("world", "maxHp") ?? oldMax
+      let newHp =
+         changes.flags?.world?.currentHp ??
+         item.getFlag("world", "currentHp") ??
+         oldHp
 
       let wasBroken = oldMax > 0 && oldHp <= Math.floor(oldMax / 2)
       let isBroken = newMax > 0 && newHp <= Math.floor(newMax / 2)
+      let wasDestroyed = oldMax > 0 && oldHp <= 0
+      let isDestroyed = newMax > 0 && newHp <= 0
 
-      if (!wasBroken && isBroken) {
-         let choices = await launchNPCDialog(item)
+      let needsDialog = false
+      let dialogState = ""
+
+      if (!wasDestroyed && isDestroyed) {
+         needsDialog = true
+         dialogState = "destroyed"
+      } else if (!wasBroken && isBroken) {
+         needsDialog = true
+         dialogState = "broken"
+      }
+
+      if (needsDialog) {
+         let choices = await launchNPCDialog(item, dialogState === "destroyed")
          if (choices) {
-            if (item.type === "armor")
+            if (item.type === "armor") {
+               await removeNPCArmorPenalties(item)
                await applyNPCArmorPenalties(item, choices)
-            if (item.type === "weapon")
+            }
+            if (item.type === "weapon") {
+               await removeNPCWeaponPenalties(item)
                await applyNPCWeaponPenalties(item, choices)
+            }
          }
       } else if (wasBroken && !isBroken) {
          if (item.type === "armor") await removeNPCArmorPenalties(item)
@@ -684,6 +751,31 @@ Hooks.on("renderItemSheet", (app, htmlElement, data) => {
    }
 
    attachDurabilityListeners(html, item)
+
+   if (item.type === "weapon" || item.type === "armor") {
+      let isChecked = item.getFlag("world", "usePreciousMaterial") !== false
+      let checkboxHTML = `
+         <div class="form-group">
+            <label>${game.i18n.localize(
+               "pf2e-aztecs-sundered.sheet-text.use-precious"
+            )}</label>
+            <input type="checkbox" name="flags.world.usePreciousMaterial" data-dtype="Boolean" ${
+               isChecked ? "checked" : ""
+            }>
+         </div>
+      `
+
+      let specificMagicInput = html.find('input[name="system.specific"]')
+      let materialDropdown = html.find('select[name="system.material.type"]')
+
+      if (specificMagicInput.length > 0) {
+         specificMagicInput.closest(".form-group").after(checkboxHTML)
+      } else if (materialDropdown.length > 0) {
+         materialDropdown.closest(".form-group").after(checkboxHTML)
+      } else {
+         html.find('.tab[data-tab="details"]').append(checkboxHTML)
+      }
+   }
 })
 
 Hooks.on("renderActorSheet", (app, htmlElement, data) => {
@@ -711,6 +803,7 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
          item.type === "armor" || item.type === "weapon" || isShield
       let maxHpFlag = item.getFlag("world", "maxHp")
       let hasDurability = maxHpFlag !== undefined
+      let defaultStats = getDefaultDurability(item)
 
       let itemRow = html.find(`[data-item-id="${item.id}"]`)
       let nameElement = itemRow.find(".item-name h4").first()
@@ -723,14 +816,15 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
          let currentHp = isShield
             ? item.system.hp?.value ?? 0
             : item.getFlag("world", "currentHp") ??
-              (isDefaultType && !hasDurability ? 10 : 0)
+              (isDefaultType && !hasDurability ? defaultStats.maxHp : 0)
          let maxHp = isShield
             ? item.system.hp?.max ?? 0
-            : maxHpFlag ?? (isDefaultType && !hasDurability ? 10 : 0)
+            : maxHpFlag ??
+              (isDefaultType && !hasDurability ? defaultStats.maxHp : 0)
          let hardness = isShield
             ? item.system.hardness ?? 0
             : item.getFlag("world", "hardness") ??
-              (isDefaultType && !hasDurability ? 5 : 0)
+              (isDefaultType && !hasDurability ? defaultStats.hardness : 0)
          let threshold = isShield
             ? item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2)
             : Math.floor(maxHp / 2)

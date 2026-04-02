@@ -4,6 +4,8 @@ import {
    weaponPropertyMap,
 } from "./constants.js"
 
+import { getDefaultDurability } from "./logic.js"
+
 export const openMaterialDialog = (item, isNew) => {
    let hpLabel = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hp-short")
    let hdLabel = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hd-short")
@@ -68,15 +70,16 @@ export const openMaterialDialog = (item, isNew) => {
                   item.type === "armor" || item.type === "weapon"
                let hasFlags = item.getFlag("world", "maxHp") !== undefined
 
+               let defaultStats = getDefaultDurability(item)
                let oldMax = hasFlags
                   ? item.getFlag("world", "maxHp")
                   : isDefaultType
-                  ? 10
+                  ? defaultStats.maxHp
                   : 1
                let oldCur = hasFlags
                   ? item.getFlag("world", "currentHp")
                   : isDefaultType
-                  ? 10
+                  ? defaultStats.maxHp
                   : 0
 
                if (oldMax <= 0) oldMax = 1
@@ -90,6 +93,7 @@ export const openMaterialDialog = (item, isNew) => {
                   "flags.world.maxHp": newMax,
                   "flags.world.currentHp": newCur,
                   "flags.world.hardness": mat.hd,
+                  "flags.world.assignedMaterial": key,
                })
             },
          },
@@ -98,7 +102,7 @@ export const openMaterialDialog = (item, isNew) => {
    }).render(true)
 }
 
-export const launchNPCDialog = (item) => {
+export const launchNPCDialog = (item, isDestroyed = false) => {
    return new Promise((resolve) => {
       const isArmor = item.type === "armor"
       const runes = item.system.runes || {}
@@ -106,6 +110,19 @@ export const launchNPCDialog = (item) => {
          "pf2e-aztecs-sundered.dialog.npc.select-penalty",
          { itemName: item.name }
       )}.</div>`
+
+      if (isDestroyed) {
+         content += `
+            <div class="form-group" style="background: rgba(255,0,0,0.1); padding: 5px; border: 1px solid red; margin-bottom: 10px;">
+               <label style="color: darkred;">${game.i18n.localize(
+                  "pf2e-aztecs-sundered.dialog.npc.penalties.full-destruction"
+               )}</label>
+               <div class="form-fields">
+                  <input type="checkbox" id="npc-full-destruction" checked>
+               </div>
+            </div>
+         `
+      }
 
       if (isArmor) {
          content += `
@@ -194,6 +211,28 @@ export const launchNPCDialog = (item) => {
             "pf2e-aztecs-sundered.dialog.npc.title"
          )}: ${item.name}`,
          content: content,
+         render: (html) => {
+            if (isDestroyed) {
+               const $html = $(html[0] ?? html)
+               const fullDestruct = $html.find("#npc-full-destruction")
+               const otherInputs = $html
+                  .find("input")
+                  .not("#npc-full-destruction")
+
+               const toggleInputs = () => {
+                  let isChecked = fullDestruct.is(":checked")
+                  otherInputs.prop("disabled", isChecked)
+                  if (isChecked) {
+                     otherInputs.closest(".form-group").css("opacity", "0.4")
+                  } else {
+                     otherInputs.closest(".form-group").css("opacity", "1")
+                  }
+               }
+
+               fullDestruct.on("change", toggleInputs)
+               toggleInputs()
+            }
+         },
          buttons: {
             apply: {
                icon: '<i class="fas fa-check"></i>',
@@ -203,6 +242,10 @@ export const launchNPCDialog = (item) => {
                callback: (html) => {
                   const $html = $(html[0] ?? html)
                   let activeProps = []
+                  let fullDestruction = isDestroyed
+                     ? $html.find("#npc-full-destruction").is(":checked")
+                     : false
+
                   if (isArmor) {
                      $html
                         .find(".npc-armor-prop:checked")
@@ -216,6 +259,7 @@ export const launchNPCDialog = (item) => {
                            .is(":checked"),
                         resilientVal: runes.resilient || 0,
                         activeProps: activeProps,
+                        fullDestruction: fullDestruction,
                      })
                   } else {
                      $html
@@ -231,6 +275,7 @@ export const launchNPCDialog = (item) => {
                            .is(":checked"),
                         strikingVal: runes.striking || 0,
                         activeProps: activeProps,
+                        fullDestruction: fullDestruction,
                      })
                   }
                },

@@ -146,6 +146,15 @@ export const registerSettings = () => {
       default: true,
       onChange: forceStateSync,
    })
+
+   game.settings.register("pf2e-aztecs-sundered", "restrictPreciousMaterial", {
+      name: "Restrict Precious Material Durability",
+      hint: "Apply precious material statistics only if the base item is less durable than the material.",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+   })
 }
 
 Hooks.on("renderSettingsConfig", (app, htmlData) => {
