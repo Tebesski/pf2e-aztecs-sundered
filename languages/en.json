@@ -199,12 +199,35 @@
       },
       "notifications": {
          "cant-equip": "{itemName} is destroyed and cannot be equipped",
-         "cant-stow": "{containerName} is destroyed and cannot hold any items"
+         "cant-stow": "{containerName} is destroyed and cannot hold any items",
+         "corrosive-added": "Added {dmg} Acid damage to Sunder from Corrosive Rune!",
+         "no-target": "Please select a target token first to sunder their gear.",
+         "no-items": "The target actor has no valid items to sunder."
       },
       "settings": {
          "showInventoryUI": {
             "name": "Show Inventory Interface",
             "hint": "Display the durability tracking numbers and damage controls directly on the main inventory rows."
+         },
+         "injectSunderButton": {
+            "name": "Inject Chat Card Sunder Button",
+            "hint": "Adds a quick-access sunder button to damage chat cards that automatically reads the rolled damage."
+         },
+         "allowPlayersSunderButton": {
+            "name": "Allow Players to use Chat Sunder",
+            "hint": "If enabled, non-GM players will also see and be able to click the chat card sunder button."
+         },
+         "showDamageButtonUI": {
+            "name": "Show Damage Controls in Inventory",
+            "hint": "Display the damage hammer and ignore-hardness checkbox on the inventory rows."
+         },
+         "showAssignMaterialButtonUI": {
+            "name": "Show Material Button in Inventory",
+            "hint": "Display the 'M' button for assigning custom materials on the inventory rows."
+         },
+         "showTrackDurabilityButtonUI": {
+            "name": "Show Track Durability Button",
+            "hint": "Display the button to start tracking durability for mundane items in the inventory."
          },
          "enableArmourPenalty": {
             "name": "Enable Broken Armour Penalties",
@@ -221,6 +244,14 @@
          "armourPenaltyHeavy": {
             "name": "Heavy Armour Penalty",
             "hint": "The penalty amount applied to broken heavy armour."
+         },
+         "laminarPenaltyReduction": {
+            "name": "Laminar trait armour penalty reduction",
+            "hint": "The amount by which to reduce the armour penalty for laminar armours. For example, if set to 1, a broken laminar light armour would take one less penalty, up to 0 penalty."
+         },
+         "showForPlayers": {
+            "name": "└ Show for Players as well",
+            "hint": "If enabled, non-GM players will also see this element on their inventory sheets."
          },
          "enableWeaponPenalty": {
             "name": "Enable Broken Weapon Penalties",

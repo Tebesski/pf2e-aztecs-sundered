@@ -1,5 +1,5 @@
 import { physicalTypes } from "./constants.js"
-import { openMaterialDialog, launchNPCDialog } from "./ui.js"
+import { openMaterialDialog, launchNPCDialog, launchSunderMacro } from "./ui.js"
 import {
    processItemDamage,
    applyNPCArmorPenalties,
@@ -12,6 +12,8 @@ import { registerSettings } from "./settings.js"
 
 Hooks.once("init", () => {
    registerSettings()
+
+   game.modules.get("pf2e-aztecs-sundered").api = { launchSunderMacro }
 })
 
 const buildDurabilityHTML = (item, isSheet = false) => {
@@ -28,68 +30,44 @@ const buildDurabilityHTML = (item, isSheet = false) => {
 
    if (!isDefaultType && !hasDurability) {
       return `<div class="aztec-durability-summary" style="${containerStyle} text-align: center;">
-            <a class="add-durability" data-item-id="${
-               item.id
-            }" title="${game.i18n.localize(
-         "pf2e-aztecs-sundered.sheet-text.track-durability"
-      )}"><i class="fa-solid fa-shield-exclamation"></i> ${game.i18n.localize(
-         "pf2e-aztecs-sundered.sheet-text.track-durability"
-      )}</a>
+            <a class="add-durability" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.track-durability")}"><i class="fa-solid fa-shield-exclamation"></i> ${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.track-durability")}</a>
         </div>`
    }
 
    let currentHp = isShield
-      ? item.system.hp?.value ?? 0
+      ? (item.system.hp?.value ?? 0)
       : isDefaultType && !hasDurability
-      ? defaultStats.maxHp
-      : item.getFlag("world", "currentHp") ?? 0
+        ? defaultStats.maxHp
+        : (item.getFlag("world", "currentHp") ?? 0)
    let maxHp = isShield
-      ? item.system.hp?.max ?? 0
+      ? (item.system.hp?.max ?? 0)
       : isDefaultType && !hasDurability
-      ? defaultStats.maxHp
-      : maxHpFlag ?? 0
+        ? defaultStats.maxHp
+        : (maxHpFlag ?? 0)
    let hardness = isShield
-      ? item.system.hardness ?? 0
+      ? (item.system.hardness ?? 0)
       : isDefaultType && !hasDurability
-      ? defaultStats.hardness
-      : item.getFlag("world", "hardness") ?? 0
+        ? defaultStats.hardness
+        : (item.getFlag("world", "hardness") ?? 0)
    let threshold = isShield
-      ? item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2)
+      ? (item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2))
       : Math.floor(maxHp / 2)
 
    let ignoreLabel = isSheet
-      ? `<label style="display:flex; align-items:center; gap: 4px; font-size: 0.9em; cursor: pointer; margin: 0;"><input type="checkbox" class="inv-ignore-box" data-item-id="${
-           item.id
-        }" style="margin: 0; width: 14px; height: 14px;"> ${game.i18n.localize(
-           "pf2e-aztecs-sundered.sheet-text.ignore-hardness"
-        )}</label>`
-      : `<input type="checkbox" class="inv-ignore-box" data-item-id="${
-           item.id
-        }" title="${game.i18n.localize(
-           "pf2e-aztecs-sundered.sheet-text.ignore-hardness"
-        )}" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">`
+      ? `<label style="display:flex; align-items:center; gap: 4px; font-size: 0.9em; cursor: pointer; margin: 0;"><input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" style="margin: 0; width: 14px; height: 14px;"> ${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.ignore-hardness")}</label>`
+      : `<input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.ignore-hardness")}" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">`
 
    let assignMaterialMarkup = isShield
       ? ""
-      : `<a class="assign-material" data-item-id="${
-           item.id
-        }" title="${game.i18n.localize(
-           "pf2e-aztecs-sundered.dialog.material.title"
-        )}"><i class="fa-solid fa-m"></i> ${game.i18n.localize(
-           "pf2e-aztecs-sundered.dialog.material.title"
-        )}</a>`
+      : `<a class="assign-material" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.dialog.material.title")}"><i class="fa-solid fa-m"></i> ${game.i18n.localize("pf2e-aztecs-sundered.dialog.material.title")}</a>`
 
    let hpLabel = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hp")
    let statusText = ""
    if (maxHp > 0) {
       if (currentHp <= 0) {
-         statusText = ` (${game.i18n.localize(
-            "pf2e-aztecs-sundered.status.destroyed"
-         )})`
+         statusText = ` (${game.i18n.localize("pf2e-aztecs-sundered.status.destroyed")})`
       } else if (currentHp <= threshold) {
-         statusText = ` (${game.i18n.localize(
-            "pf2e-aztecs-sundered.status.broken"
-         )})`
+         statusText = ` (${game.i18n.localize("pf2e-aztecs-sundered.status.broken")})`
       }
    }
 
@@ -97,33 +75,17 @@ const buildDurabilityHTML = (item, isSheet = false) => {
         <div class="aztec-durability-summary" style="${containerStyle}">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
                 <span style="display: flex; align-items: center; gap: 12px;">
-                    <span>${hpLabel}${statusText}: <span class="durability-edit" data-item-id="${
-      item.id
-   }" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / <span class="durability-edit" data-item-id="${
-      item.id
-   }" data-flag-key="maxHp" contenteditable="true">${maxHp}</span></span>
+                    <span>${hpLabel}${statusText}: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / <span class="durability-edit" data-item-id="${item.id}" data-flag-key="maxHp" contenteditable="true">${maxHp}</span></span>
                     <span style="display: flex; align-items: center; gap: 6px;">
-                        <a class="damage-hammer inv-hammer" data-item-id="${
-                           item.id
-                        }" title="${game.i18n.localize(
-      "pf2e-aztecs-sundered.sheet-text.strike-item"
-   )}"><i class="fa-solid fa-hammer-crash"></i></a>
-                        <span class="inv-damage-edit" data-item-id="${
-                           item.id
-                        }" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="${game.i18n.localize(
-      "pf2e-aztecs-sundered.sheet-text.damage-amt"
-   )}">0</span>
+                        <a class="damage-hammer inv-hammer" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.strike-item")}"><i class="fa-solid fa-hammer-crash"></i></a>
+                        <span class="inv-damage-edit" data-item-id="${item.id}" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.damage-amt")}">0</span>
                         ${ignoreLabel}
                     </span>
                 </span>
                 ${assignMaterialMarkup}
             </div>
             <div>
-                <span>${game.i18n.localize(
-                   "pf2e-aztecs-sundered.sheet-text.hardness"
-                )}: <span class="durability-edit" data-item-id="${
-      item.id
-   }" data-flag-key="hardness" contenteditable="true">${hardness}</span> (BT: ${threshold})</span>
+                <span>${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hardness")}: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="hardness" contenteditable="true">${hardness}</span> (BT: ${threshold})</span>
             </div>
         </div>
     `
@@ -182,13 +144,13 @@ const attachDurabilityListeners = (html, entity) => {
             let defaultStats = getDefaultDurability(item)
 
             let currentMax = isShield
-               ? item.system.hp?.max ?? 1
-               : item.getFlag("world", "maxHp") ??
-                 (isDefaultType ? defaultStats.maxHp : 1)
+               ? (item.system.hp?.max ?? 1)
+               : (item.getFlag("world", "maxHp") ??
+                 (isDefaultType ? defaultStats.maxHp : 1))
             let currentHp = isShield
-               ? item.system.hp?.value ?? 0
-               : item.getFlag("world", "currentHp") ??
-                 (isDefaultType ? defaultStats.maxHp : 0)
+               ? (item.system.hp?.value ?? 0)
+               : (item.getFlag("world", "currentHp") ??
+                 (isDefaultType ? defaultStats.maxHp : 0))
 
             if (flagKey === "currentHp") {
                if (newValue > currentMax) newValue = currentMax
@@ -223,15 +185,11 @@ const attachDurabilityListeners = (html, entity) => {
                   updates["flags.world.hardness"] =
                      flagKey === "hardness" ? newValue : defaultStats.hardness
                }
-
-               if (item.getFlag("world", flagKey) !== newValue) {
+               if (item.getFlag("world", flagKey) !== newValue)
                   updates[`flags.world.${flagKey}`] = newValue
-               }
             }
 
-            if (Object.keys(updates).length > 0) {
-               await item.update(updates)
-            }
+            if (Object.keys(updates).length > 0) await item.update(updates)
          }
       })
 
@@ -251,8 +209,7 @@ const attachDurabilityListeners = (html, entity) => {
       .on("click", async (event) => {
          event.preventDefault()
          event.stopPropagation()
-         const icon = event.currentTarget
-         const itemId = icon.dataset.itemId
+         const itemId = event.currentTarget.dataset.itemId
          const item = entity.items ? entity.items.get(itemId) : entity
 
          const damageSpan = $(event.currentTarget)
@@ -286,8 +243,8 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
                   ui.notifications.warn(
                      game.i18n.format(
                         "pf2e-aztecs-sundered.notifications.cant-stow",
-                        { containerName: container.name }
-                     )
+                        { containerName: container.name },
+                     ),
                   )
                   delete changes.system.containerId
                }
@@ -304,23 +261,23 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    let defaultStats = getDefaultDurability(item)
 
    let oldMax = isShield
-      ? item.system.hp?.max ?? 1
+      ? (item.system.hp?.max ?? 1)
       : item.getFlag("world", "maxHp") ||
         (isDefaultType ? defaultStats.maxHp : 1)
    let oldHp = isShield
-      ? item.system.hp?.value ?? 0
-      : item.getFlag("world", "currentHp") ??
-        (isDefaultType ? defaultStats.maxHp : 0)
+      ? (item.system.hp?.value ?? 0)
+      : (item.getFlag("world", "currentHp") ??
+        (isDefaultType ? defaultStats.maxHp : 0))
 
    options.aztecOldHp = oldHp
    options.aztecOldMax = oldMax
 
    let newMax = isShield
-      ? changes.system?.hp?.max ?? oldMax
-      : changes.flags?.world?.maxHp ?? oldMax
+      ? (changes.system?.hp?.max ?? oldMax)
+      : (changes.flags?.world?.maxHp ?? oldMax)
    let newHp = isShield
-      ? changes.system?.hp?.value ?? oldHp
-      : changes.flags?.world?.currentHp ?? oldHp
+      ? (changes.system?.hp?.value ?? oldHp)
+      : (changes.flags?.world?.currentHp ?? oldHp)
 
    if (newHp > newMax) {
       newHp = newMax
@@ -336,15 +293,14 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    }
 
    let threshold = isShield
-      ? item.system.hp?.brokenThreshold ?? Math.floor(newMax / 2)
+      ? (item.system.hp?.brokenThreshold ?? Math.floor(newMax / 2))
       : Math.floor(newMax / 2)
    let wasBroken =
       oldMax > 0 &&
       oldHp <=
          (isShield
-            ? item.system.hp?.brokenThreshold ?? Math.floor(oldMax / 2)
+            ? (item.system.hp?.brokenThreshold ?? Math.floor(oldMax / 2))
             : Math.floor(oldMax / 2))
-
    let isBroken = newMax > 0 && newHp <= threshold
 
    let hasDurabilityFlags = item.getFlag("world", "maxHp") !== undefined
@@ -360,10 +316,8 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
             ui.notifications.warn(
                game.i18n.format(
                   "pf2e-aztecs-sundered.notifications.cant-equip",
-                  {
-                     itemName: item.name,
-                  }
-               )
+                  { itemName: item.name },
+               ),
             )
             delete changes.system.equipped
          }
@@ -379,8 +333,6 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    }
 
    if (item.actor && item.actor.type === "npc") return
-
-   if (item.actor && item.actor.type === "npc") return
    if (isShield) return
 
    let rules = foundry.utils.duplicate(item.system.rules || [])
@@ -389,27 +341,35 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    if (item.type === "armor") {
       let armorPenaltyEnabled = game.settings.get(
          "pf2e-aztecs-sundered",
-         "enableArmourPenalty"
+         "enableArmourPenalty",
       )
       let penalty = 0
       if (item.system.category === "light")
          penalty = game.settings.get(
             "pf2e-aztecs-sundered",
-            "armourPenaltyLight"
+            "armourPenaltyLight",
          )
       if (item.system.category === "medium")
          penalty = game.settings.get(
             "pf2e-aztecs-sundered",
-            "armourPenaltyMedium"
+            "armourPenaltyMedium",
          )
       if (item.system.category === "heavy")
          penalty = game.settings.get(
             "pf2e-aztecs-sundered",
-            "armourPenaltyHeavy"
+            "armourPenaltyHeavy",
          )
 
+      if (item.system.traits?.value?.includes("laminar")) {
+         let laminarMod = game.settings.get(
+            "pf2e-aztecs-sundered",
+            "laminarPenaltyReduction",
+         )
+         penalty = Math.min(0, penalty - laminarMod)
+      }
+
       let brokenRuleIndex = rules.findIndex(
-         (r) => r.slug === "broken-armour-penalty"
+         (r) => r.slug === "broken-armour-penalty",
       )
       if (isBroken && armorPenaltyEnabled && penalty !== 0) {
          if (brokenRuleIndex === -1) {
@@ -419,7 +379,7 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
                value: penalty,
                slug: "broken-armour-penalty",
                label: game.i18n.localize(
-                  "pf2e-aztecs-sundered.rule-elements.broken.armor"
+                  "pf2e-aztecs-sundered.rule-elements.broken.armor",
                ),
             })
             rulesChanged = true
@@ -436,18 +396,18 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
    if (item.type === "weapon") {
       let weaponPenaltyEnabled = game.settings.get(
          "pf2e-aztecs-sundered",
-         "enableWeaponPenalty"
+         "enableWeaponPenalty",
       )
       let penalty = game.settings.get(
          "pf2e-aztecs-sundered",
-         "weaponPenaltyAmount"
+         "weaponPenaltyAmount",
       )
 
       let atkRuleIndex = rules.findIndex(
-         (r) => r.slug === "broken-weapon-attack"
+         (r) => r.slug === "broken-weapon-attack",
       )
       let dmgRuleIndex = rules.findIndex(
-         (r) => r.slug === "broken-weapon-damage"
+         (r) => r.slug === "broken-weapon-damage",
       )
 
       if (isBroken && weaponPenaltyEnabled && penalty !== 0) {
@@ -459,7 +419,7 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
                value: penalty,
                slug: "broken-weapon-attack",
                label: game.i18n.localize(
-                  "pf2e-aztecs-sundered.rule-elements.broken.weapon"
+                  "pf2e-aztecs-sundered.rule-elements.broken.weapon",
                ),
             })
             rulesChanged = true
@@ -475,7 +435,7 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
                value: penalty,
                slug: "broken-weapon-damage",
                label: game.i18n.localize(
-                  "pf2e-aztecs-sundered.rule-elements.broken.weapon"
+                  "pf2e-aztecs-sundered.rule-elements.broken.weapon",
                ),
             })
             rulesChanged = true
@@ -509,7 +469,6 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
          changes.flags.world = changes.flags.world || {}
          changes.flags.world.runesBackup = backup
       }
-
       let desiredRunes = foundry.utils.duplicate(backup)
 
       if (item.type === "armor") {
@@ -523,14 +482,14 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
             if (
                game.settings.get(
                   "pf2e-aztecs-sundered",
-                  "suppressArmourResilient"
+                  "suppressArmourResilient",
                )
             )
                desiredRunes.resilient = 0
             if (
                game.settings.get(
                   "pf2e-aztecs-sundered",
-                  "suppressArmourProperty"
+                  "suppressArmourProperty",
                )
             )
                desiredRunes.property = []
@@ -546,82 +505,19 @@ Hooks.on("preUpdateItem", (item, changes, options, userId) => {
             if (
                game.settings.get(
                   "pf2e-aztecs-sundered",
-                  "suppressWeaponStriking"
+                  "suppressWeaponStriking",
                )
             )
                desiredRunes.striking = 0
             if (
                game.settings.get(
                   "pf2e-aztecs-sundered",
-                  "suppressWeaponProperty"
+                  "suppressWeaponProperty",
                )
             )
                desiredRunes.property = []
          }
       }
-
-      if (changes.system?.runes) {
-         foundry.utils.mergeObject(backup, changes.system.runes)
-         changes.flags = changes.flags || {}
-         changes.flags.world = changes.flags.world || {}
-         changes.flags.world.runesBackup = backup
-
-         desiredRunes = foundry.utils.duplicate(backup)
-         if (item.type === "armor") {
-            if (
-               game.settings.get(
-                  "pf2e-aztecs-sundered",
-                  "suppressArmourPotency"
-               )
-            ) {
-               desiredRunes.potency = 0
-               desiredRunes.resilient = 0
-               desiredRunes.property = []
-            } else {
-               if (
-                  game.settings.get(
-                     "pf2e-aztecs-sundered",
-                     "suppressArmourResilient"
-                  )
-               )
-                  desiredRunes.resilient = 0
-               if (
-                  game.settings.get(
-                     "pf2e-aztecs-sundered",
-                     "suppressArmourProperty"
-                  )
-               )
-                  desiredRunes.property = []
-            }
-         } else if (item.type === "weapon") {
-            if (
-               game.settings.get(
-                  "pf2e-aztecs-sundered",
-                  "suppressWeaponPotency"
-               )
-            ) {
-               desiredRunes.potency = 0
-               desiredRunes.striking = 0
-               desiredRunes.property = []
-            } else {
-               if (
-                  game.settings.get(
-                     "pf2e-aztecs-sundered",
-                     "suppressWeaponStriking"
-                  )
-               )
-                  desiredRunes.striking = 0
-               if (
-                  game.settings.get(
-                     "pf2e-aztecs-sundered",
-                     "suppressWeaponProperty"
-                  )
-               )
-                  desiredRunes.property = []
-            }
-         }
-      }
-
       changes.system = changes.system || {}
       changes.system.runes = desiredRunes
    } else if (wasBroken && !isBroken) {
@@ -644,7 +540,7 @@ Hooks.on("updateItem", async (item, changes, options, userId) => {
          changes.flags?.world?.currentHp ?? item.getFlag("world", "currentHp")
       if (oldHp > 0 && newHp <= 0) {
          const contents = item.actor.items.filter(
-            (i) => i.system.containerId === item.id
+            (i) => i.system.containerId === item.id,
          )
          if (contents.length > 0) {
             const updates = contents.map((i) => ({
@@ -746,60 +642,77 @@ Hooks.on("renderItemSheet", (app, htmlElement, data) => {
    if (!physicalTypes.includes(item.type)) return
 
    const html = $(htmlElement[0] ?? htmlElement)
-
    let content = buildDurabilityHTML(item, true)
 
    let tab = html.find('.tab[data-tab="description"]')
    if (tab.length === 0) tab = html.find('.tab[data-tab="details"]')
    if (tab.length === 0) tab = html.find(".sheet-body")
 
-   if (tab.length) {
-      tab.prepend(content)
-   }
+   if (tab.length) tab.prepend(content)
 
    attachDurabilityListeners(html, item)
 
    if (item.type === "weapon" || item.type === "armor") {
       let isChecked = item.getFlag("world", "usePreciousMaterial") !== false
-      let checkboxHTML = `
-         <div class="form-group">
-            <label>${game.i18n.localize(
-               "pf2e-aztecs-sundered.sheet-text.use-precious"
-            )}</label>
-            <input type="checkbox" name="flags.world.usePreciousMaterial" data-dtype="Boolean" ${
-               isChecked ? "checked" : ""
-            }>
-         </div>
-      `
+      let checkboxHTML = `<div class="form-group"><label>${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.use-precious")}</label><input type="checkbox" name="flags.world.usePreciousMaterial" data-dtype="Boolean" ${isChecked ? "checked" : ""}></div>`
 
       let specificMagicInput = html.find('input[name="system.specific"]')
       let materialDropdown = html.find('select[name="system.material.type"]')
 
-      if (specificMagicInput.length > 0) {
+      if (specificMagicInput.length > 0)
          specificMagicInput.closest(".form-group").after(checkboxHTML)
-      } else if (materialDropdown.length > 0) {
+      else if (materialDropdown.length > 0)
          materialDropdown.closest(".form-group").after(checkboxHTML)
-      } else {
-         html.find('.tab[data-tab="details"]').append(checkboxHTML)
-      }
+      else html.find('.tab[data-tab="details"]').append(checkboxHTML)
    }
 })
 
 Hooks.on("renderActorSheet", (app, htmlElement, data) => {
    const actor = app.actor
    const allowedActors = ["character", "npc", "familiar", "vehicle", "loot"]
-
    if (!actor || !allowedActors.includes(actor.type)) return
 
    const html = $(htmlElement[0] ?? htmlElement)
-
    const physicalItems =
       actor.inventory?.contents ||
       actor.items.filter((i) => physicalTypes.includes(i.type))
-   let showInventoryUI = game.settings.get(
+
+   let isGM = game.user.isGM
+   let baseUI = game.settings.get("pf2e-aztecs-sundered", "showInventoryUI")
+   let showInventoryUI = isGM
+      ? baseUI
+      : baseUI &&
+        game.settings.get("pf2e-aztecs-sundered", "showInventoryUI_players")
+
+   let baseDmg = game.settings.get("pf2e-aztecs-sundered", "showDamageButtonUI")
+   let showDamageUI = isGM
+      ? baseDmg
+      : baseDmg &&
+        game.settings.get("pf2e-aztecs-sundered", "showDamageButtonUI_players")
+
+   let baseMat = game.settings.get(
       "pf2e-aztecs-sundered",
-      "showInventoryUI"
+      "showAssignMaterialButtonUI",
    )
+   let showMaterialUI = isGM
+      ? baseMat
+      : baseMat &&
+        game.settings.get(
+           "pf2e-aztecs-sundered",
+           "showAssignMaterialButtonUI_players",
+        )
+
+   let baseTrack = game.settings.get(
+      "pf2e-aztecs-sundered",
+      "showTrackDurabilityButtonUI",
+   )
+   let showTrackUI = isGM
+      ? baseTrack
+      : baseTrack &&
+        game.settings.get(
+           "pf2e-aztecs-sundered",
+           "showTrackDurabilityButtonUI_players",
+        )
 
    let hpShort = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hp-short")
    let hdShort = game.i18n.localize("pf2e-aztecs-sundered.sheet-text.hd-short")
@@ -814,86 +727,60 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
 
       let itemRow = html.find(`[data-item-id="${item.id}"]`)
       let nameElement = itemRow.find(".item-name h4").first()
-
-      if (nameElement.length === 0) {
-         nameElement = itemRow.find(".name").first()
-      }
+      if (nameElement.length === 0) nameElement = itemRow.find(".name").first()
 
       if (isDefaultType || hasDurability) {
          let currentHp = isShield
-            ? item.system.hp?.value ?? 0
-            : item.getFlag("world", "currentHp") ??
-              (isDefaultType && !hasDurability ? defaultStats.maxHp : 0)
+            ? (item.system.hp?.value ?? 0)
+            : (item.getFlag("world", "currentHp") ??
+              (isDefaultType && !hasDurability ? defaultStats.maxHp : 0))
          let maxHp = isShield
-            ? item.system.hp?.max ?? 0
-            : maxHpFlag ??
-              (isDefaultType && !hasDurability ? defaultStats.maxHp : 0)
+            ? (item.system.hp?.max ?? 0)
+            : (maxHpFlag ??
+              (isDefaultType && !hasDurability ? defaultStats.maxHp : 0))
          let hardness = isShield
-            ? item.system.hardness ?? 0
-            : item.getFlag("world", "hardness") ??
-              (isDefaultType && !hasDurability ? defaultStats.hardness : 0)
+            ? (item.system.hardness ?? 0)
+            : (item.getFlag("world", "hardness") ??
+              (isDefaultType && !hasDurability ? defaultStats.hardness : 0))
          let threshold = isShield
-            ? item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2)
+            ? (item.system.hp?.brokenThreshold ?? Math.floor(maxHp / 2))
             : Math.floor(maxHp / 2)
 
          if (showInventoryUI) {
+            let damageMarkup = showDamageUI
+               ? `
+                <span style="margin-left: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                    <a class="damage-hammer inv-hammer" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.strike-item")}"><i class="fa-solid fa-hammer-crash"></i></a>
+                    <span class="inv-damage-edit" data-item-id="${item.id}" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.damage-amt")}">0</span>
+                    <input type="checkbox" class="inv-ignore-box" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.ignore-hardness")}" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">
+                </span>`
+               : ""
+
             let displayString = `
-                    <span style="font-size: 0.85em; color: grey; margin-left: 8px; display: inline-flex; align-items: center;">
-                        (${hpShort}: <span class="durability-edit" data-item-id="${
-               item.id
-            }" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / 
-                        <span class="durability-edit" data-item-id="${
-                           item.id
-                        }" data-flag-key="maxHp" contenteditable="true">${maxHp}</span> | 
-                        ${hdShort}: <span class="durability-edit" data-item-id="${
-               item.id
-            }" data-flag-key="hardness" contenteditable="true">${hardness}</span>)
-                        
-                        <span style="margin-left: 14px; display: inline-flex; align-items: center; gap: 6px;">
-                            <a class="damage-hammer inv-hammer" data-item-id="${
-                               item.id
-                            }" title="${game.i18n.localize(
-               "pf2e-aztecs-sundered.sheet-text.strike-item"
-            )}"><i class="fa-solid fa-hammer-crash"></i></a>
-                            <span class="inv-damage-edit" data-item-id="${
-                               item.id
-                            }" contenteditable="true" style="display: inline-block; min-width: 16px; text-align: center;" title="${game.i18n.localize(
-               "pf2e-aztecs-sundered.sheet-text.damage-amt"
-            )}">0</span>
-                            <input type="checkbox" class="inv-ignore-box" data-item-id="${
-                               item.id
-                            }" title="${game.i18n.localize(
-               "pf2e-aztecs-sundered.sheet-text.ignore-hardness"
-            )}" style="margin: 0; width: 14px; height: 14px; cursor: pointer;">
-                        </span>
-                    </span>
-                `
+                <span style="font-size: 0.85em; color: grey; margin-left: 8px; display: inline-flex; align-items: center;">
+                    (${hpShort}: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="currentHp" contenteditable="true">${currentHp}</span> / 
+                    <span class="durability-edit" data-item-id="${item.id}" data-flag-key="maxHp" contenteditable="true">${maxHp}</span> | 
+                    ${hdShort}: <span class="durability-edit" data-item-id="${item.id}" data-flag-key="hardness" contenteditable="true">${hardness}</span>)
+                    ${damageMarkup}
+                </span>`
 
             nameElement.append(displayString)
 
-            let mButton = isShield
-               ? ""
-               : `<a class="assign-material" data-item-id="${
-                    item.id
-                 }" title="${game.i18n.localize(
-                    "pf2e-aztecs-sundered.dialog.material.title"
-                 )}" style="margin-right: 8px; font-size: 1.1em;"><i class="fa-solid fa-m"></i></a>`
+            let mButton =
+               isShield || !showMaterialUI
+                  ? ""
+                  : `<a class="assign-material" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.dialog.material.title")}" style="margin-right: 8px; font-size: 1.1em;"><i class="fa-solid fa-m"></i></a>`
             let carryToggle = itemRow.find(".item-carry-type").first()
 
             if (mButton) {
-               if (carryToggle.length > 0) {
-                  carryToggle.before(mButton)
-               } else {
-                  itemRow.find(".item-controls").first().prepend(mButton)
-               }
+               if (carryToggle.length > 0) carryToggle.before(mButton)
+               else itemRow.find(".item-controls").first().prepend(mButton)
             }
          }
 
          if (maxHp > 0) {
             if (currentHp <= 0) {
-               let skullIcon = `<i class="fa-solid fa-skull" style="color: #555; margin-right: 6px;" title="${game.i18n.localize(
-                  "pf2e-aztecs-sundered.status.destroyed"
-               )}"></i>`
+               let skullIcon = `<i class="fa-solid fa-skull" style="color: #555; margin-right: 6px;" title="${game.i18n.localize("pf2e-aztecs-sundered.status.destroyed")}"></i>`
                nameElement.prepend(skullIcon)
                nameElement.css({ opacity: "0.5", filter: "grayscale(100%)" })
                itemRow
@@ -901,21 +788,94 @@ Hooks.on("renderActorSheet", (app, htmlElement, data) => {
                   .first()
                   .css({ opacity: "0.5", filter: "grayscale(100%)" })
             } else if (currentHp <= threshold) {
-               let brokenIcon = `<i class="fa-solid fa-heart-crack" style="color: #a83232; margin-right: 6px;" title="${game.i18n.localize(
-                  "pf2e-aztecs-sundered.status.broken"
-               )}"></i>`
+               let brokenIcon = `<i class="fa-solid fa-heart-crack" style="color: #a83232; margin-right: 6px;" title="${game.i18n.localize("pf2e-aztecs-sundered.status.broken")}"></i>`
                nameElement.prepend(brokenIcon)
             }
          }
-      } else if (showInventoryUI) {
-         let addIcon = `<a class="add-durability" data-item-id="${
-            item.id
-         }" title="${game.i18n.localize(
-            "pf2e-aztecs-sundered.sheet-text.track-durability"
-         )}"><i class="fa-solid fa-shield-exclamation"></i></a>`
+      } else if (showInventoryUI && showTrackUI) {
+         let addIcon = `<a class="add-durability" data-item-id="${item.id}" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.track-durability")}"><i class="fa-solid fa-shield-exclamation"></i></a>`
          nameElement.append(addIcon)
       }
    })
-
    attachDurabilityListeners(html, actor)
+})
+
+Hooks.on("renderChatMessage", (message, htmlElement, data) => {
+   if (!game.settings.get("pf2e-aztecs-sundered", "injectSunderButton")) return
+   if (
+      !game.user.isGM &&
+      !game.settings.get("pf2e-aztecs-sundered", "allowPlayersSunderButton")
+   )
+      return
+   if (!message.isDamageRoll) return
+
+   const html = $(htmlElement[0] ?? htmlElement)
+   let totalDamage = 0
+   if (message.rolls)
+      totalDamage = message.rolls.reduce((sum, roll) => sum + roll.total, 0)
+
+   // Build the attacker data payload
+   let attackerData = {
+      rawDamage: totalDamage,
+      isAdamantine: false,
+      adamantineGrade: null,
+      isCorrosive: false,
+      corrosiveDice: "",
+      isRazing: false,
+      razingDamage: 0,
+   }
+
+   let weapon = message.item
+   if (weapon && weapon.type === "weapon") {
+      // Check Adamantine
+      if (weapon.system.material?.type === "adamantine") {
+         attackerData.isAdamantine = true
+         attackerData.adamantineGrade = weapon.system.material.grade
+      }
+
+      // Check Razing
+      let traits = weapon.system.traits?.value || []
+      if (traits.includes("razing")) {
+         let strikingTier = weapon.system.runes?.striking || 0
+         let diceCount = 1 + strikingTier
+         attackerData.isRazing = true
+         attackerData.razingDamage = diceCount * 2
+      }
+
+      // Check Corrosive
+      let isCrit =
+         message.flags?.pf2e?.context?.options?.includes("critical-hit") ||
+         (message.flavor && message.flavor.toLowerCase().includes("critical"))
+      if (isCrit) {
+         let propertyRunes = weapon.system.runes?.property || []
+         let isGreater = propertyRunes.includes("greaterCorrosive")
+         let isStandard = propertyRunes.includes("corrosive")
+
+         if (isGreater || isStandard) {
+            attackerData.isCorrosive = true
+            attackerData.corrosiveDice = isGreater ? "6d6" : "3d6"
+         }
+      }
+   }
+
+   let buttonHtml = `
+      <button type="button" class="sunder-chat-btn" title="${game.i18n.localize("pf2e-aztecs-sundered.sheet-text.strike-item")}">
+         <i class="fa-solid fa-hammer-crash fa-fw" inert=""></i>
+         <span class="label">SUNDER</span>
+      </button>`
+
+   html.find(".damage-application").append(buttonHtml)
+
+   // Click listener
+   html.find(".sunder-chat-btn").on("click", async (event) => {
+      event.preventDefault()
+      let targets = Array.from(game.user.targets)
+      if (targets.length === 0)
+         return ui.notifications.warn(
+            game.i18n.localize("pf2e-aztecs-sundered.notifications.no-target"),
+         )
+
+      let targetActor = targets[0].actor
+      launchSunderMacro(targetActor, attackerData)
+   })
 })

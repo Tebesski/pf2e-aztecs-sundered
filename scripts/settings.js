@@ -7,7 +7,7 @@ const forceStateSync = foundry.utils.debounce(async () => {
             let currentHp = item.getFlag("world", "currentHp")
             if (maxHp && currentHp <= Math.floor(maxHp / 2)) {
                updates.push(
-                  item.update({ "flags.world.durabilitySync": Date.now() })
+                  item.update({ "flags.world.durabilitySync": Date.now() }),
                )
             }
          }
@@ -20,12 +20,98 @@ export const registerSettings = () => {
    game.settings.register("pf2e-aztecs-sundered", "showInventoryUI", {
       name: "pf2e-aztecs-sundered.settings.showInventoryUI.name",
       hint: "pf2e-aztecs-sundered.settings.showInventoryUI.hint",
-      scope: "client",
+      scope: "world",
       config: true,
       type: Boolean,
-      default: false,
+      default: true,
       requiresReload: true,
    })
+   game.settings.register("pf2e-aztecs-sundered", "showInventoryUI_players", {
+      name: "pf2e-aztecs-sundered.settings.showForPlayers.name",
+      hint: "pf2e-aztecs-sundered.settings.showForPlayers.hint",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: true,
+      requiresReload: true,
+   })
+
+   game.settings.register("pf2e-aztecs-sundered", "showDamageButtonUI", {
+      name: "pf2e-aztecs-sundered.settings.showDamageButtonUI.name",
+      hint: "pf2e-aztecs-sundered.settings.showDamageButtonUI.hint",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: true,
+      requiresReload: true,
+   })
+   game.settings.register(
+      "pf2e-aztecs-sundered",
+      "showDamageButtonUI_players",
+      {
+         name: "pf2e-aztecs-sundered.settings.showForPlayers.name",
+         hint: "pf2e-aztecs-sundered.settings.showForPlayers.hint",
+         scope: "world",
+         config: true,
+         type: Boolean,
+         default: true,
+         requiresReload: true,
+      },
+   )
+
+   game.settings.register(
+      "pf2e-aztecs-sundered",
+      "showAssignMaterialButtonUI",
+      {
+         name: "pf2e-aztecs-sundered.settings.showAssignMaterialButtonUI.name",
+         hint: "pf2e-aztecs-sundered.settings.showAssignMaterialButtonUI.hint",
+         scope: "world",
+         config: true,
+         type: Boolean,
+         default: true,
+         requiresReload: true,
+      },
+   )
+   game.settings.register(
+      "pf2e-aztecs-sundered",
+      "showAssignMaterialButtonUI_players",
+      {
+         name: "pf2e-aztecs-sundered.settings.showForPlayers.name",
+         hint: "pf2e-aztecs-sundered.settings.showForPlayers.hint",
+         scope: "world",
+         config: true,
+         type: Boolean,
+         default: true,
+         requiresReload: true,
+      },
+   )
+
+   game.settings.register(
+      "pf2e-aztecs-sundered",
+      "showTrackDurabilityButtonUI",
+      {
+         name: "pf2e-aztecs-sundered.settings.showTrackDurabilityButtonUI.name",
+         hint: "pf2e-aztecs-sundered.settings.showTrackDurabilityButtonUI.hint",
+         scope: "world",
+         config: true,
+         type: Boolean,
+         default: false,
+         requiresReload: true,
+      },
+   )
+   game.settings.register(
+      "pf2e-aztecs-sundered",
+      "showTrackDurabilityButtonUI_players",
+      {
+         name: "pf2e-aztecs-sundered.settings.showForPlayers.name",
+         hint: "pf2e-aztecs-sundered.settings.showForPlayers.hint",
+         scope: "world",
+         config: true,
+         type: Boolean,
+         default: false,
+         requiresReload: true,
+      },
+   )
 
    game.settings.register("pf2e-aztecs-sundered", "enableArmourPenalty", {
       name: "pf2e-aztecs-sundered.settings.enableArmourPenalty.name",
@@ -64,6 +150,16 @@ export const registerSettings = () => {
       config: true,
       type: Number,
       default: -3,
+      onChange: forceStateSync,
+   })
+
+   game.settings.register("pf2e-aztecs-sundered", "laminarPenaltyReduction", {
+      name: "pf2e-aztecs-sundered.settings.laminarPenaltyReduction.name",
+      hint: "pf2e-aztecs-sundered.settings.laminarPenaltyReduction.hint",
+      scope: "world",
+      config: true,
+      type: Number,
+      default: -1,
       onChange: forceStateSync,
    })
 
@@ -155,20 +251,92 @@ export const registerSettings = () => {
       type: Boolean,
       default: false,
    })
+
+   game.settings.register("pf2e-aztecs-sundered", "injectSunderButton", {
+      name: "pf2e-aztecs-sundered.settings.injectSunderButton.name",
+      hint: "pf2e-aztecs-sundered.settings.injectSunderButton.hint",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: true,
+   })
+
+   game.settings.register("pf2e-aztecs-sundered", "allowPlayersSunderButton", {
+      name: "pf2e-aztecs-sundered.settings.allowPlayersSunderButton.name",
+      hint: "pf2e-aztecs-sundered.settings.allowPlayersSunderButton.hint",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: false,
+   })
 }
 
 Hooks.on("renderSettingsConfig", (app, htmlData) => {
    const html = htmlData instanceof HTMLElement ? htmlData : htmlData[0]
 
+   const toggleUIDependencies = () => {
+      const showUI = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showInventoryUI"]',
+      )
+      const showUIPlayers = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showInventoryUI_players"]',
+      )
+
+      const showDmg = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showDamageButtonUI"]',
+      )
+      const showDmgPlayers = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showDamageButtonUI_players"]',
+      )
+
+      const showMat = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showAssignMaterialButtonUI"]',
+      )
+      const showMatPlayers = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showAssignMaterialButtonUI_players"]',
+      )
+
+      const showTrack = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showTrackDurabilityButtonUI"]',
+      )
+      const showTrackPlayers = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showTrackDurabilityButtonUI_players"]',
+      )
+
+      if (!showUI) return
+
+      const setDisplay = (element, isVisible) => {
+         if (element && element.closest(".form-group")) {
+            element.closest(".form-group").style.display = isVisible
+               ? ""
+               : "none"
+         }
+      }
+
+      let isMainOn = showUI.checked
+
+      // Master switch visibility
+      setDisplay(showUIPlayers, isMainOn)
+
+      showDmg.disabled = !isMainOn
+      showMat.disabled = !isMainOn
+      showTrack.disabled = !isMainOn
+
+      // Sub-switch visibility
+      setDisplay(showDmgPlayers, isMainOn && showDmg.checked)
+      setDisplay(showMatPlayers, isMainOn && showMat.checked)
+      setDisplay(showTrackPlayers, isMainOn && showTrack.checked)
+   }
+
    const toggleDependencies = () => {
       const armourPotency = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.suppressArmourPotency"]'
+         'input[name="pf2e-aztecs-sundered.suppressArmourPotency"]',
       )
       const armourResilient = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.suppressArmourResilient"]'
+         'input[name="pf2e-aztecs-sundered.suppressArmourResilient"]',
       )
       const armourProperty = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.suppressArmourProperty"]'
+         'input[name="pf2e-aztecs-sundered.suppressArmourProperty"]',
       )
 
       if (armourPotency && armourResilient && armourProperty) {
@@ -184,13 +352,13 @@ Hooks.on("renderSettingsConfig", (app, htmlData) => {
       }
 
       const weaponPotency = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.suppressWeaponPotency"]'
+         'input[name="pf2e-aztecs-sundered.suppressWeaponPotency"]',
       )
       const weaponStriking = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.suppressWeaponStriking"]'
+         'input[name="pf2e-aztecs-sundered.suppressWeaponStriking"]',
       )
       const weaponProperty = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.suppressWeaponProperty"]'
+         'input[name="pf2e-aztecs-sundered.suppressWeaponProperty"]',
       )
 
       if (weaponPotency && weaponStriking && weaponProperty) {
@@ -206,10 +374,13 @@ Hooks.on("renderSettingsConfig", (app, htmlData) => {
       }
    }
 
+   toggleUIDependencies()
    toggleDependencies()
 
    html.addEventListener("change", (e) => {
-      if (
+      if (e.target.name.startsWith("pf2e-aztecs-sundered.show")) {
+         toggleUIDependencies()
+      } else if (
          e.target.name === "pf2e-aztecs-sundered.suppressArmourPotency" ||
          e.target.name === "pf2e-aztecs-sundered.suppressWeaponPotency"
       ) {
