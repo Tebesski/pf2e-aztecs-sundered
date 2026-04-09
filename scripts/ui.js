@@ -852,7 +852,7 @@ export const launchRepairDialog = async (itemObject) => {
                         speaker: ChatMessage.getSpeaker({
                            actor: itemActor || null,
                         }),
-                        content: `<div class="pf2e chat-card"><header class="card-header flexrow"><img src="${itemObject.img}" title="${itemObject.name}" width="36" height="36"/><h3>${repairHeader}</h3></header><div class="card-content" style="margin-top: 5px;"><div style="color: ${outcomeColor}; font-weight: bold; font-size: 1.1em; text-align: center; margin: 4px 0;">${outcomeTextMap[outcomeType] || rolledFallback}</div><div>${amountText}</div><div style="text-align: center; margin-top: 5px;">${currentHpLabel}: <strong>${newCalculatedHitPoints} / ${maximumHitPoints}</strong></div></div></div>`,
+                        content: `<div class="pf2e chat-card"><header class="card-header flexrow"><img src="${itemObject.img}" title="${itemObject.name}" width="36" height="36"/><h3>${repairHeader}</h3></header><div class="card-content" style="margin-top: 5px;"><div style="color: ${outcomeColor}; font-weight: bold; font-size: 1.1em; text-align: center; margin: 4px 0;">${outcomeTextMap[outcomeType] || rolledFallback}</div><div>${amountText}</div><div style="text-align: center; margin-top: 5px;">${currentHpLabel}: <strong>${newlyCalculatedHitPoints} / ${maximumHitPoints}</strong></div></div></div>`,
                      })
                   },
                })
