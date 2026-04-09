@@ -1,0 +1,85 @@
+<div style="margin-bottom: 10px;">{{localize
+      "pf2e-aztecs-sundered.dialog.npc.select-penalty"
+      itemName=item.name
+   }}.</div>
+{{#if isDestroyed}}
+   <div
+      class="form-group"
+      style="background: rgba(255,0,0,0.1); padding: 5px; border: 1px solid red; margin-bottom: 10px;"
+   >
+      <label style="color: darkred;">{{localize
+            "pf2e-aztecs-sundered.dialog.npc.penalties.full-destruction"
+         }}</label>
+      <div class="form-fields">
+         <input type="checkbox" id="npc-full-destruction" checked />
+      </div>
+   </div>
+{{/if}}
+{{#if isArmor}}
+   <div class="form-group">
+      <label>{{localize "pf2e-aztecs-sundered.dialog.npc.penalties.ac"}}</label>
+      <div class="form-fields"><input
+            type="number"
+            id="npc-ac-penalty"
+            value="-2"
+         /></div>
+   </div>
+   {{#if hasResilient}}
+      <div class="form-group">
+         <label>{{localize
+               "pf2e-aztecs-sundered.dialog.npc.penalties.resilient"
+            }}
+            (+{{runes.resilient}})</label>
+         <div class="form-fields"><input
+               type="checkbox"
+               id="npc-resilient-penalty"
+               checked
+            /></div>
+      </div>
+   {{/if}}
+   {{#each activeArmorProps}}
+      <div class="form-group">
+         <label>{{this.label}}</label>
+         <div class="form-fields"><input
+               type="checkbox"
+               class="npc-armor-prop"
+               data-prop="{{this.key}}"
+               checked
+            /></div>
+      </div>
+   {{/each}}
+{{else}}
+   <div class="form-group">
+      <label>{{localize
+            "pf2e-aztecs-sundered.dialog.npc.penalties.attack-damage"
+         }}</label>
+      <div class="form-fields"><input
+            type="number"
+            id="npc-weapon-penalty"
+            value="-2"
+         /></div>
+   </div>
+   {{#if hasStriking}}
+      <div class="form-group">
+         <label>{{localize
+               "pf2e-aztecs-sundered.dialog.npc.penalties.striking"
+            }}</label>
+         <div class="form-fields"><input
+               type="checkbox"
+               id="npc-striking-penalty"
+               checked
+            /></div>
+      </div>
+   {{/if}}
+   {{#each activeWeaponProps}}
+      <div class="form-group">
+         <label>{{this.label}}</label>
+         <div class="form-fields"><input
+               type="checkbox"
+               class="npc-weapon-prop"
+               data-prop="{{this.key}}"
+               checked
+            /></div>
+      </div>
+   {{/each}}
+{{/if}}

@@ -144,6 +144,12 @@
          "label": "Знищено: {itemName}",
          "description": "Предмет {itemName} повністю знищено, він не надає жодних переваг."
       },
+      "effect": {
+         "persistent-damage": {
+            "name": "Тривала шкода: {itemName}",
+            "desc": "Отримує {formula} шкоди (тип: {type}) наприкінці ходу."
+         }
+      },
       "rule-elements": {
          "broken": {
             "armor": "Зламаний обладунок",
@@ -176,13 +182,89 @@
             },
             "title": "Зламане екіпірування",
             "apply-penalties": "Застосувати штрафи"
+         },
+         "sunder": {
+            "title": "Руйнування: {actorName}",
+            "apply-damage": "Завдати шкоди",
+            "select-item": "Виберіть предмет",
+            "selected-raw-damage": "Обрана чиста шкода",
+            "razing-trait-damage": "Шкода від властивості Руйнівний",
+            "corrosive-rune": "Руна Корозії (Кислота)",
+            "rolled": "Кидок",
+            "ignore-hardness": "Ігнорувати твердість",
+            "custom-resistance": "Додатковий опір",
+            "custom-resistance-title": "Додаткове зниження шкоди після Твердості",
+            "adamantine-prompt": "Атакуючий використовує адамантинову зброю?",
+            "adamantine-grade": "Якість адамантину",
+            "standard-grade": "Стандартна якість: 14",
+            "high-grade": "Висока якість: 17",
+            "apply-persistent": "Застосувати {formula} {type} тривалої шкоди до предмета?",
+            "effective-hardness": "Ефективна твердість",
+            "damage-to-hp": "Шкода по ПЗ",
+            "remaining-hp": "Залишок ПЗ"
+         },
+         "persistent": {
+            "title": "Перевірка предмета: {actorName}",
+            "takes": "отримує",
+            "persistent-damage": "тривалої шкоди!",
+            "rolled": "Кидок",
+            "ignore-hardness": "Ігнорувати твердість",
+            "custom-resistance": "Дод. опір",
+            "effective-hardness": "Ефективна твердість",
+            "damage-to-hp": "Шкода по ПЗ",
+            "remaining-hp": "Залишок ПЗ",
+            "apply-damage": "Завдати шкоди",
+            "end-effect": "Зняти ефект"
+         },
+         "repair": {
+            "title": "Ремонт: {itemName}",
+            "repairing": "Ремонтування",
+            "crafting-proficiency": "Володіння ремеслом",
+            "repair-dc": "СК ремонту",
+            "restores-info": "(При успіху відновлює {baseHeal} ПЗ. При крит. успіху {critHeal} ПЗ)",
+            "roll": "Кидок"
          }
       },
       "status": {
          "broken": "Зламано",
          "destroyed": "Знищено"
       },
+      "ranks": {
+         "untrained": "Нетренований",
+         "trained": "Навчений",
+         "expert": "Експерт",
+         "master": "Майстер",
+         "legendary": "Легенда"
+      },
+      "outcomes": {
+         "critical-success": "Крит. успіх",
+         "success": "Успіх",
+         "failure": "Провал",
+         "critical-failure": "Крит. провал",
+         "rolled": "Кидок"
+      },
+      "chat": {
+         "sunder-button-label": "ЗРУЙНУВАТИ",
+         "sunder": {
+            "header": "Зруйновано: {itemName}",
+            "raw-incoming": "Чиста шкода",
+            "eff-hardness": "Ефективна твердість",
+            "net-damage": "Підсумкова шкода по предмету",
+            "current-hp": "Поточні ПЗ"
+         },
+         "persistent": {
+            "content": "<strong>{itemName}</strong> отримує {damage} тривалої шкоди (тип: {type}).<br>Залишок ПЗ: {currentHp} / {maxHp}."
+         },
+         "repair": {
+            "header": "Ремонт: {itemName}",
+            "healed": "Предмет відновлено на <strong>{amount}</strong> ПЗ.",
+            "damaged": "Предмет пошкоджено на <strong>{amount}</strong> ПЗ.",
+            "no-hp-restored": "ПЗ не відновлено.",
+            "current-hp": "Поточні ПЗ"
+         }
+      },
       "sheet-text": {
+         "repair-item": "Ремонтувати предмет",
          "hp": "ОЗ",
          "hp-short": "ОЗ",
          "hd-short": "ТВ",
@@ -198,11 +280,15 @@
          "dragonhide-element": "Чи збігається шкода з імунітетом дракона?"
       },
       "notifications": {
+         "fully-repaired": "Цей предмет уже має максимальну кількість HP.",
          "cant-equip": "Предмет {itemName} знищено, його не можна екіпірувати",
          "cant-stow": "Предмет {containerName} знищено, він не може вміщати речі",
          "corrosive-added": "Додано {dmg} шкоди від кислоти до руйнування від руни Корозії!",
          "no-target": "Будь ласка, спочатку виберіть токен цілі, щоб пошкодити її спорядження.",
-         "no-items": "У вибраної цілі немає відповідних предметів для руйнування."
+         "no-items": "У вибраної цілі немає відповідних предметів для руйнування.",
+         "persistent-ended": "Предмет {itemName} більше не отримує тривалої шкоди.",
+         "no-actor-repair": "Не знайдено персонажа для ремонту предмета.",
+         "no-crafting-skill": "У цього персонажа немає навички Ремесло."
       },
       "settings": {
          "injectSunderButton": {
@@ -228,6 +314,10 @@
          "showDamageButtonUI": {
             "name": "Показувати елементи керування шкодою в інвентарі",
             "hint": "Відображати молоток шкоди та прапорець ігнорування твердості в рядках інвентарю."
+         },
+         "showRepairButtonUI": {
+            "name": "Показувати кнопку ремонту в інвентарі",
+            "hint": "Відображати значок гайкового ключа для швидкого ремонту HP предмета залежно від рівня володіння Ремеслом."
          },
          "showAssignMaterialButtonUI": {
             "name": "Показувати кнопку матеріалів в інвентарі",

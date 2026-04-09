@@ -26,6 +26,7 @@ export const registerSettings = () => {
       default: true,
       requiresReload: true,
    })
+
    game.settings.register("pf2e-aztecs-sundered", "showInventoryUI_players", {
       name: "pf2e-aztecs-sundered.settings.showForPlayers.name",
       hint: "pf2e-aztecs-sundered.settings.showForPlayers.hint",
@@ -45,6 +46,7 @@ export const registerSettings = () => {
       default: true,
       requiresReload: true,
    })
+
    game.settings.register(
       "pf2e-aztecs-sundered",
       "showDamageButtonUI_players",
@@ -72,6 +74,7 @@ export const registerSettings = () => {
          requiresReload: true,
       },
    )
+
    game.settings.register(
       "pf2e-aztecs-sundered",
       "showAssignMaterialButtonUI_players",
@@ -99,6 +102,7 @@ export const registerSettings = () => {
          requiresReload: true,
       },
    )
+
    game.settings.register(
       "pf2e-aztecs-sundered",
       "showTrackDurabilityButtonUI_players",
@@ -109,6 +113,30 @@ export const registerSettings = () => {
          config: true,
          type: Boolean,
          default: false,
+         requiresReload: true,
+      },
+   )
+
+   game.settings.register("pf2e-aztecs-sundered", "showRepairButtonUI", {
+      name: "pf2e-aztecs-sundered.settings.showRepairButtonUI.name",
+      hint: "pf2e-aztecs-sundered.settings.showRepairButtonUI.hint",
+      scope: "world",
+      config: true,
+      type: Boolean,
+      default: true,
+      requiresReload: true,
+   })
+
+   game.settings.register(
+      "pf2e-aztecs-sundered",
+      "showRepairButtonUI_players",
+      {
+         name: "pf2e-aztecs-sundered.settings.showForPlayers.name",
+         hint: "pf2e-aztecs-sundered.settings.showForPlayers.hint",
+         scope: "world",
+         config: true,
+         type: Boolean,
+         default: true,
          requiresReload: true,
       },
    )
@@ -275,35 +303,42 @@ Hooks.on("renderSettingsConfig", (app, htmlData) => {
    const html = htmlData instanceof HTMLElement ? htmlData : htmlData[0]
 
    const toggleUIDependencies = () => {
-      const showUI = html.querySelector(
+      const showInventoryUI = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showInventoryUI"]',
       )
-      const showUIPlayers = html.querySelector(
+      const showInventoryUIPlayers = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showInventoryUI_players"]',
       )
 
-      const showDmg = html.querySelector(
+      const showDamageUI = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showDamageButtonUI"]',
       )
-      const showDmgPlayers = html.querySelector(
+      const showDamageUIPlayers = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showDamageButtonUI_players"]',
       )
 
-      const showMat = html.querySelector(
+      const showMaterialUI = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showAssignMaterialButtonUI"]',
       )
-      const showMatPlayers = html.querySelector(
+      const showMaterialUIPlayers = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showAssignMaterialButtonUI_players"]',
       )
 
-      const showTrack = html.querySelector(
+      const showTrackUI = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showTrackDurabilityButtonUI"]',
       )
-      const showTrackPlayers = html.querySelector(
+      const showTrackUIPlayers = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showTrackDurabilityButtonUI_players"]',
       )
 
-      if (!showUI) return
+      const showRepairUI = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showRepairButtonUI"]',
+      )
+      const showRepairUIPlayers = html.querySelector(
+         'input[name="pf2e-aztecs-sundered.showRepairButtonUI_players"]',
+      )
+
+      if (!showInventoryUI) return
 
       const setDisplay = (element, isVisible) => {
          if (element && element.closest(".form-group")) {
@@ -313,19 +348,19 @@ Hooks.on("renderSettingsConfig", (app, htmlData) => {
          }
       }
 
-      let isMainOn = showUI.checked
+      let isMainOn = showInventoryUI.checked
 
-      // Master switch visibility
-      setDisplay(showUIPlayers, isMainOn)
+      setDisplay(showInventoryUIPlayers, isMainOn)
 
-      showDmg.disabled = !isMainOn
-      showMat.disabled = !isMainOn
-      showTrack.disabled = !isMainOn
+      showDamageUI.disabled = !isMainOn
+      showMaterialUI.disabled = !isMainOn
+      showTrackUI.disabled = !isMainOn
+      showRepairUI.disabled = !isMainOn
 
-      // Sub-switch visibility
-      setDisplay(showDmgPlayers, isMainOn && showDmg.checked)
-      setDisplay(showMatPlayers, isMainOn && showMat.checked)
-      setDisplay(showTrackPlayers, isMainOn && showTrack.checked)
+      setDisplay(showDamageUIPlayers, isMainOn && showDamageUI.checked)
+      setDisplay(showMaterialUIPlayers, isMainOn && showMaterialUI.checked)
+      setDisplay(showTrackUIPlayers, isMainOn && showTrackUI.checked)
+      setDisplay(showRepairUIPlayers, isMainOn && showRepairUI.checked)
    }
 
    const toggleDependencies = () => {

@@ -1,0 +1,42 @@
+{{#if ignoreHardness}}
+   <div class="form-group">
+      <label>{{localize
+            "pf2e-aztecs-sundered.dialog.ignore-hardness.amount-to-ignore"
+         }}:</label>
+      <div class="form-fields">
+         <input type="number" id="ignored-val" value="0" autofocus />
+      </div>
+   </div>
+{{/if}}
+{{#if isGrisantian}}
+   <div class="form-group" style="margin-top: 8px;">
+      <label>{{localize
+            "pf2e-aztecs-sundered.sheet-text.grisantian-fire"
+         }}</label>
+      <div class="form-fields">
+         <input type="checkbox" id="mat-fire" />
+      </div>
+   </div>
+   <div class="form-group">
+      <label>{{localize
+            "pf2e-aztecs-sundered.sheet-text.grisantian-piercing"
+         }}</label>
+      <div class="form-fields">
+         <input type="checkbox" id="mat-piercing-slashing" />
+      </div>
+   </div>
+{{/if}}
+{{#if isDragonhide}}
+   <div class="form-group" style="margin-top: 8px;">
+      <label>{{localize
+            "pf2e-aztecs-sundered.sheet-text.dragonhide-element"
+         }}</label>
+      <div class="form-fields">
+         <input type="checkbox" id="mat-dragon-element" />
+      </div>
+   </div>
+{{/if}}
+<div style="text-align: center; margin-top: 10px; font-size: 1.1em;">
+   {{localize "pf2e-aztecs-sundered.dialog.ignore-hardness.damage-to-hp"}}:
+   <strong id="dynamic-damage-preview">{{defaultDmg}}</strong>
+</div>

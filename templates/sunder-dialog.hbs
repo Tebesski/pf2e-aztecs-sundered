@@ -1,0 +1,77 @@
+<div style="display: flex; flex-direction: column; gap: 10px;">
+    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+        <img id="item-icon-preview" src="{{items.[0].img}}" style="width: 40px; height: 40px; border: 1px solid #444; border-radius: 4px;">
+        <div style="flex: 1;">
+            <label>{{localize "pf2e-aztecs-sundered.dialog.sunder.select-item"}}</label>
+            <select id="item-select" style="width: 100%;">
+                {{#each items}}
+                <option value="{{this.id}}">{{this.name}} ({{localize "pf2e-aztecs-sundered.sheet-text.hp-short"}}: {{this.hp}}/{{this.max}} | {{localize "pf2e-aztecs-sundered.sheet-text.hd-short"}}: {{this.hd}})</option>
+                {{/each}}
+            </select>
+        </div>
+    </div>
+    {{#if hasParsedDamage}}
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; background: rgba(0,0,0,0.1); padding: 8px; border-radius: 4px;">
+        {{#each parsedDamage}}
+        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; border: 1px solid #ccc; padding: 2px 6px; border-radius: 4px; background: #fff;">
+            <input type="checkbox" class="dmg-toggle" data-idx="{{@index}}" checked>
+            <i class="fa-solid {{this.iconData.icon}}" style="color: {{this.iconData.color}};"></i>
+            <strong>{{this.value}}</strong> <span style="text-transform: capitalize; font-size: 0.8em;">{{this.type}}</span>
+        </label>
+        {{/each}}
+    </div>
+    {{/if}}
+    <div class="form-group">
+        <label>{{localize "pf2e-aztecs-sundered.dialog.sunder.selected-raw-damage"}}</label>
+        <input type="number" id="raw-damage" value="{{rawDamage}}">
+    </div>
+    {{#if isRazing}}
+    <div class="form-group">
+        <label style="color: var(--color-pf-secondary);"><i class="fa-solid fa-burst"></i> {{localize "pf2e-aztecs-sundered.dialog.sunder.razing-trait-damage"}}</label>
+        <input type="number" id="razing-dmg" value="{{razingDamage}}" disabled>
+    </div>
+    {{else}}
+    <input type="hidden" id="razing-dmg" value="0">
+    {{/if}}
+    {{#if isCorrosive}}
+    <div class="form-group">
+        <label style="color: var(--color-border-acid);"><i class="fa-solid fa-vial"></i> {{localize "pf2e-aztecs-sundered.dialog.sunder.corrosive-rune"}}</label>
+        <input type="number" id="corrosive-dmg" value="{{corrosiveDmg}}" disabled title="{{localize 'pf2e-aztecs-sundered.dialog.sunder.rolled'}} {{corrosiveDice}}">
+    </div>
+    {{else}}
+    <input type="hidden" id="corrosive-dmg" value="0">
+    {{/if}}
+    <div class="form-group">
+        <label>{{localize "pf2e-aztecs-sundered.dialog.sunder.ignore-hardness"}}</label>
+        <input type="number" id="ignore-hd" value="0">
+    </div>
+    <div class="form-group">
+        <label>{{localize "pf2e-aztecs-sundered.dialog.sunder.custom-resistance"}}</label>
+        <input type="number" id="custom-res" value="0" title="{{localize 'pf2e-aztecs-sundered.dialog.sunder.custom-resistance-title'}}">
+    </div>
+    <hr>
+    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+        <label>{{localize "pf2e-aztecs-sundered.dialog.sunder.adamantine-prompt"}}</label>
+        <input type="checkbox" id="use-adamantine" {{#if isAdamantine}}checked{{/if}}>
+    </div>
+    <div class="form-group">
+        <label>{{localize "pf2e-aztecs-sundered.dialog.sunder.adamantine-grade"}}</label>
+        <select id="adamantine-hd" {{#unless isAdamantine}}disabled{{/unless}} style="width: 100%;">
+            <option value="14" {{#unless isHighGrade}}selected{{/unless}}>{{localize "pf2e-aztecs-sundered.dialog.sunder.standard-grade"}}</option>
+            <option value="17" {{#if isHighGrade}}selected{{/if}}>{{localize "pf2e-aztecs-sundered.dialog.sunder.high-grade"}}</option>
+        </select>
+    </div>
+    {{#if persistentData}}
+    <hr>
+    <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; background: rgba(200,50,50,0.1); padding: 5px; border-radius: 4px;">
+        <label style="color: var(--color-pf-secondary); font-weight: bold;"><i class="fa-solid fa-fire"></i> {{localize "pf2e-aztecs-sundered.dialog.sunder.apply-persistent" formula=persistentData.formula type=persistentData.type}}</label>
+        <input type="checkbox" id="apply-persistent" checked>
+    </div>
+    {{/if}}
+    <hr>
+    <div id="sunder-preview" style="text-align: center; padding: 8px; background: rgba(0,0,0,0.15); border-radius: 5px;">
+        <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.effective-hardness"}}: <strong id="eff-hd">{{items.[0].hd}}</strong></div>
+        <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.damage-to-hp"}}: <strong id="net-dmg" style="color: #d9534f;">0</strong></div>
+        <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.remaining-hp"}}: <strong id="rem-hp">{{items.[0].hp}} / {{items.[0].max}}</strong></div>
+    </div>
+</div>

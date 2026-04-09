@@ -144,6 +144,12 @@
          "label": "Уничтожено: {itemName}",
          "description": "Предмет {itemName} полностью уничтожен и не дает никаких преимуществ."
       },
+      "effect": {
+         "persistent-damage": {
+            "name": "Продолжительный урон: {itemName}",
+            "desc": "Получает {formula} урона (тип: {type}) в конце хода."
+         }
+      },
       "rule-elements": {
          "broken": {
             "armor": "Сломанный доспех",
@@ -176,13 +182,89 @@
             },
             "title": "Сломанная экипировка",
             "apply-penalties": "Применить штрафы"
+         },
+         "sunder": {
+            "title": "Разрушение: {actorName}",
+            "apply-damage": "Применить урон",
+            "select-item": "Выберите предмет",
+            "selected-raw-damage": "Выбранный чистый урон",
+            "razing-trait-damage": "Урон от свойства Разрушительный",
+            "corrosive-rune": "Руна Коррозии (Кислота)",
+            "rolled": "Бросок",
+            "ignore-hardness": "Игнорировать твердость",
+            "custom-resistance": "Дополнительное сопротивление",
+            "custom-resistance-title": "Дополнительное снижение урона после Твердости",
+            "adamantine-prompt": "Атакующий использует адамантиновое оружие?",
+            "adamantine-grade": "Качество адамантина",
+            "standard-grade": "Стандартное качество: 14",
+            "high-grade": "Высокое качество: 17",
+            "apply-persistent": "Применить {formula} {type} продолжительного урона к предмету?",
+            "effective-hardness": "Эффективная твердость",
+            "damage-to-hp": "Урон по ХП",
+            "remaining-hp": "Оставшиеся ХП"
+         },
+         "persistent": {
+            "title": "Проверка предмета: {actorName}",
+            "takes": "получает",
+            "persistent-damage": "продолжительного урона!",
+            "rolled": "Бросок",
+            "ignore-hardness": "Игнорировать твердость",
+            "custom-resistance": "Доп. сопротивление",
+            "effective-hardness": "Эффективная твердость",
+            "damage-to-hp": "Урон по ХП",
+            "remaining-hp": "Оставшиеся ХП",
+            "apply-damage": "Применить урон",
+            "end-effect": "Снять эффект"
+         },
+         "repair": {
+            "title": "Починка: {itemName}",
+            "repairing": "Починка",
+            "crafting-proficiency": "Владение ремеслом",
+            "repair-dc": "КС починки",
+            "restores-info": "(При успехе восстанавливает {baseHeal} ХП. При крит. успехе {critHeal} ХП)",
+            "roll": "Бросок"
          }
       },
       "status": {
          "broken": "Сломан",
          "destroyed": "Уничтожен"
       },
+      "ranks": {
+         "untrained": "Нетренированный",
+         "trained": "Обученный",
+         "expert": "Эксперт",
+         "master": "Мастер",
+         "legendary": "Легенда"
+      },
+      "outcomes": {
+         "critical-success": "Крит. успех",
+         "success": "Успех",
+         "failure": "Провал",
+         "critical-failure": "Крит. провал",
+         "rolled": "Бросок"
+      },
+      "chat": {
+         "sunder-button-label": "РАЗРУШИТЬ",
+         "sunder": {
+            "header": "Разрушено: {itemName}",
+            "raw-incoming": "Чистый урон",
+            "eff-hardness": "Эффективная твердость",
+            "net-damage": "Итоговый урон по предмету",
+            "current-hp": "Текущие ХП"
+         },
+         "persistent": {
+            "content": "<strong>{itemName}</strong> получает {damage} продолжительного урона (тип: {type}).<br>Оставшиеся ХП: {currentHp} / {maxHp}."
+         },
+         "repair": {
+            "header": "Починка: {itemName}",
+            "healed": "Предмет восстановлен на <strong>{amount}</strong> ХП.",
+            "damaged": "Предмет поврежден на <strong>{amount}</strong> ХП.",
+            "no-hp-restored": "ХП не восстановлены.",
+            "current-hp": "Текущие ХП"
+         }
+      },
       "sheet-text": {
+         "repair-item": "Починить предмет",
          "hp": "ХП",
          "hp-short": "ХП",
          "hd-short": "ТВ",
@@ -202,7 +284,11 @@
          "cant-stow": "Предмет {containerName} уничтожен и не может вмещать вещи",
          "corrosive-added": "Добавлено {dmg} урона кислотой к разрушению от руны Коррозии!",
          "no-target": "Пожалуйста, сначала выберите токен цели, чтобы повредить ее снаряжение.",
-         "no-items": "У выбранной цели нет подходящих предметов для разрушения."
+         "no-items": "У выбранной цели нет подходящих предметов для разрушения.",
+         "fully-repaired": "Этот предмет уже имеет максимальное количество HP.",
+         "persistent-ended": "Предмет {itemName} больше не получает продолжительный урон.",
+         "no-actor-repair": "Не найден персонаж для починки предмета.",
+         "no-crafting-skill": "У этого персонажа нет навыка Ремесло."
       },
       "settings": {
          "injectSunderButton": {
@@ -220,6 +306,10 @@
          "showInventoryUI": {
             "name": "Показать интерфейс инвентаря",
             "hint": "Отображать числа прочности и элементы управления уроном прямо в строках главного инвентаря."
+         },
+         "showRepairButtonUI": {
+            "name": "Показывать кнопку починки в инвентаре",
+            "hint": "Отображать значок гаечного ключа для быстрой починки HP предмета в зависимости от уровня владения Ремеслом."
          },
          "showDamageButtonUI": {
             "name": "Показывать управление уроном в инвентаре",

@@ -80,19 +80,19 @@
       },
       "armor-property": {
          "acidResistant": {
-            "label": "Reduce Acid Resistance by 5"
+            "label": "Reduce acid resistance by 5"
          },
          "coldResistant": {
-            "label": "Reduce Cold Resistance by 5"
+            "label": "Reduce cold resistance by 5"
          },
          "electricityResistant": {
-            "label": "Reduce Electricity Resistance by 5"
+            "label": "Reduce electricity resistance by 5"
          },
          "fireResistant": {
-            "label": "Reduce Fire Resistance by 5"
+            "label": "Reduce fire resistance by 5"
          },
          "sonicResistant": {
-            "label": "Reduce Sonic Resistance by 5"
+            "label": "Reduce sonic resistance by 5"
          },
          "shadow": {
             "label": "Reduce Stealth by 1"
@@ -115,25 +115,25 @@
       },
       "weapon-property": {
          "flaming": {
-            "label": "Remove Fire Damage"
+            "label": "Remove fire damage"
          },
          "frost": {
-            "label": "Remove Cold Damage"
+            "label": "Remove cold damage"
          },
          "shock": {
-            "label": "Remove Electricity Damage"
+            "label": "Remove electricity damage"
          },
          "corrosive": {
-            "label": "Remove Acid Damage"
+            "label": "Remove acid damage"
          },
          "thundering": {
-            "label": "Remove Sonic Damage"
+            "label": "Remove sonic damage"
          },
          "holy": {
-            "label": "Remove Spirit Damage (Holy)"
+            "label": "Remove spirit damage (holy)"
          },
          "unholy": {
-            "label": "Remove Spirit Damage (Unholy)"
+            "label": "Remove spirit damage (unholy)"
          }
       },
       "broken-effect": {
@@ -144,51 +144,99 @@
          "label": "Destroyed: {itemName}",
          "description": "{itemName} is completely destroyed and provides no benefits."
       },
+      "effect": {
+         "persistent-damage": {
+            "name": "Persistent damage: {itemName}",
+            "desc": "Takes {formula} {type} damage at the end of the turn."
+         }
+      },
       "rule-elements": {
          "broken": {
-            "armor": "Broken Armor",
-            "weapon": "Broken Weapon",
-            "resilient-rune": "Broken Resilient Rune",
-            "striking-rune": "Broken Striking Rune",
-            "other-rune": "Broken {type} Rune"
+            "armor": "Broken armor",
+            "weapon": "Broken weapon",
+            "resilient-rune": "Broken resilient rune",
+            "striking-rune": "Broken striking rune",
+            "other-rune": "Broken {type} rune"
          }
       },
       "dialog": {
          "ignore-hardness": {
             "title": "Ignore Hardness",
             "amount-to-ignore": "Amount of Hardness to ignore",
-            "damage-to-hp": "Projected Damage to HP"
+            "damage-to-hp": "Projected damage to HP"
          },
          "material": {
-            "title": "Assign Material",
-            "select": "Select Material",
-            "common-examples": "Common Examples",
-            "apply-material": "Apply Material"
+            "title": "Assign material",
+            "select": "Select material",
+            "common-examples": "Common examples",
+            "apply-material": "Apply material"
          },
          "npc": {
             "select-penalty": "Select the mechanical penalties to apply to this creature for breaking their {itemName}",
             "penalties": {
-               "ac": "AC Penalty",
-               "resilient": "Suppres Resilient",
-               "attack-damage": "Attack & Damage Penalty",
-               "striking": "Suppress Striking",
-               "full-destruction": "Destroyed: Apply maximum penalties"
+               "ac": "AC penalty",
+               "resilient": "Suppress resilient",
+               "attack-damage": "Attack and damage penalty",
+               "striking": "Suppress striking",
+               "full-destruction": "Destroyed: apply maximum penalties"
             },
-            "title": "Broken Gear",
-            "apply-penalties": "Apply Penalties"
+            "title": "Broken gear",
+            "apply-penalties": "Apply penalties"
+         },
+         "sunder": {
+            "title": "Sunder: {actorName}",
+            "apply-damage": "Apply damage",
+            "select-item": "Select item",
+            "selected-raw-damage": "Selected raw damage",
+            "razing-trait-damage": "Razing trait damage",
+            "corrosive-rune": "Corrosive rune (acid)",
+            "rolled": "Rolled",
+            "ignore-hardness": "Ignore Hardness",
+            "custom-resistance": "Custom resistance",
+            "custom-resistance-title": "Additional damage reduction after Hardness",
+            "adamantine-prompt": "Attacker uses adamantine weapon?",
+            "adamantine-grade": "Adamantine grade",
+            "standard-grade": "Standard-grade: 14",
+            "high-grade": "High-grade: 17",
+            "apply-persistent": "Apply {formula} {type} persistent damage to item?",
+            "effective-hardness": "Effective Hardness",
+            "damage-to-hp": "Damage to HP",
+            "remaining-hp": "Remaining HP"
+         },
+         "persistent": {
+            "title": "Item flat check: {actorName}",
+            "takes": "takes",
+            "persistent-damage": "persistent damage!",
+            "rolled": "Rolled",
+            "ignore-hardness": "Ignore Hardness",
+            "custom-resistance": "Custom resistance",
+            "effective-hardness": "Effective Hardness",
+            "damage-to-hp": "Damage to HP",
+            "remaining-hp": "Remaining HP",
+            "apply-damage": "Apply damage",
+            "end-effect": "End effect"
+         },
+         "repair": {
+            "title": "Repair {itemName}",
+            "repairing": "Repairing",
+            "crafting-proficiency": "Crafting proficiency",
+            "repair-dc": "Repair DC",
+            "restores-info": "(Default success restores {baseHeal} HP. Crit restores {critHeal} HP)",
+            "roll": "Roll"
          }
       },
       "sheet-text": {
+         "repair-item": "Repair item",
          "hp": "HP",
          "hp-short": "HP",
          "hd-short": "HD",
          "bt-short": "BT",
          "ignore-hardness": "Ignore Hardness",
-         "strike-item": "Strike Item",
-         "damage-amt": "Damage Amount",
+         "strike-item": "Strike item",
+         "damage-amt": "Damage amount",
          "hardness": "Hardness",
-         "track-durability": "Track Durability",
-         "use-precious": "Apply Precious Material durability",
+         "track-durability": "Track durability",
+         "use-precious": "Apply precious material durability",
          "grisantian-fire": "Is this fire damage?",
          "grisantian-piercing": "Is this piercing or slashing damage?",
          "dragonhide-element": "Does this match the dragon's elemental immunity?"
@@ -197,52 +245,94 @@
          "broken": "Broken",
          "destroyed": "Destroyed"
       },
+      "ranks": {
+         "untrained": "Untrained",
+         "trained": "Trained",
+         "expert": "Expert",
+         "master": "Master",
+         "legendary": "Legendary"
+      },
+      "outcomes": {
+         "critical-success": "Critical success",
+         "success": "Success",
+         "failure": "Failure",
+         "critical-failure": "Critical failure",
+         "rolled": "Rolled"
+      },
+      "chat": {
+         "sunder-button-label": "SUNDER",
+         "sunder": {
+            "header": "Sundered: {itemName}",
+            "raw-incoming": "Raw incoming",
+            "eff-hardness": "Effective Hardness",
+            "net-damage": "Net damage taken",
+            "current-hp": "Current HP"
+         },
+         "persistent": {
+            "content": "<strong>{itemName}</strong> took {damage} persistent {type} damage.<br>Remaining HP: {currentHp} / {maxHp}."
+         },
+         "repair": {
+            "header": "Repair: {itemName}",
+            "healed": "Item healed for <strong>{amount}</strong> HP.",
+            "damaged": "Item damaged for <strong>{amount}</strong> HP.",
+            "no-hp-restored": "No HP restored.",
+            "current-hp": "Current HP"
+         }
+      },
       "notifications": {
          "cant-equip": "{itemName} is destroyed and cannot be equipped",
          "cant-stow": "{containerName} is destroyed and cannot hold any items",
-         "corrosive-added": "Added {dmg} Acid damage to Sunder from Corrosive Rune!",
+         "corrosive-added": "Added {dmg} acid damage to sunder from corrosive rune!",
          "no-target": "Please select a target token first to sunder their gear.",
-         "no-items": "The target actor has no valid items to sunder."
+         "no-items": "The target actor has no valid items to sunder.",
+         "fully-repaired": "This item is already at maximum HP.",
+         "persistent-ended": "{itemName} is no longer taking persistent damage.",
+         "no-actor-repair": "No actor found to perform the repair.",
+         "no-crafting-skill": "This actor does not have a Crafting skill."
       },
       "settings": {
          "showInventoryUI": {
-            "name": "Show Inventory Interface",
+            "name": "Show inventory interface",
             "hint": "Display the durability tracking numbers and damage controls directly on the main inventory rows."
          },
+         "showRepairButtonUI": {
+            "name": "Show repair button in inventory",
+            "hint": "Display the wrench icon to quickly repair item HP based on Crafting proficiency."
+         },
          "injectSunderButton": {
-            "name": "Inject Chat Card Sunder Button",
+            "name": "Inject chat card sunder button",
             "hint": "Adds a quick-access sunder button to damage chat cards that automatically reads the rolled damage."
          },
          "allowPlayersSunderButton": {
-            "name": "Allow Players to use Chat Sunder",
+            "name": "Allow players to use chat sunder",
             "hint": "If enabled, non-GM players will also see and be able to click the chat card sunder button."
          },
          "showDamageButtonUI": {
-            "name": "Show Damage Controls in Inventory",
+            "name": "Show damage controls in inventory",
             "hint": "Display the damage hammer and ignore-hardness checkbox on the inventory rows."
          },
          "showAssignMaterialButtonUI": {
-            "name": "Show Material Button in Inventory",
+            "name": "Show material button in inventory",
             "hint": "Display the 'M' button for assigning custom materials on the inventory rows."
          },
          "showTrackDurabilityButtonUI": {
-            "name": "Show Track Durability Button",
+            "name": "Show track durability button",
             "hint": "Display the button to start tracking durability for mundane items in the inventory."
          },
          "enableArmourPenalty": {
-            "name": "Enable Broken Armour Penalties",
+            "name": "Enable broken armour penalties",
             "hint": "Apply a status penalty to armour class when defensive gear drops below the broken threshold."
          },
          "armourPenaltyLight": {
-            "name": "Light Armour Penalty",
+            "name": "Light armour penalty",
             "hint": "The penalty amount applied to broken light armour."
          },
          "armourPenaltyMedium": {
-            "name": "Medium Armour Penalty",
+            "name": "Medium armour penalty",
             "hint": "The penalty amount applied to broken medium armour."
          },
          "armourPenaltyHeavy": {
-            "name": "Heavy Armour Penalty",
+            "name": "Heavy armour penalty",
             "hint": "The penalty amount applied to broken heavy armour."
          },
          "laminarPenaltyReduction": {
@@ -250,43 +340,43 @@
             "hint": "The amount by which to reduce the armour penalty for laminar armours. For example, if set to 1, a broken laminar light armour would take one less penalty, up to 0 penalty."
          },
          "showForPlayers": {
-            "name": "└ Show for Players as well",
+            "name": "└ Show for players as well",
             "hint": "If enabled, non-GM players will also see this element on their inventory sheets."
          },
          "enableWeaponPenalty": {
-            "name": "Enable Broken Weapon Penalties",
+            "name": "Enable broken weapon penalties",
             "hint": "Apply an item penalty to attack and damage rolls when a weapon drops below the broken threshold."
          },
          "weaponPenaltyAmount": {
-            "name": "Weapon Penalty Amount",
+            "name": "Weapon penalty amount",
             "hint": "The specific numeric penalty applied to broken weapons."
          },
          "suppressArmourPotency": {
-            "name": "Suppress Armour Potency",
+            "name": "Suppress armour potency",
             "hint": "Disable fundamental runes on broken armour. Note: This feature conflicts with Automatic Bonus Progression."
          },
          "suppressArmourResilient": {
-            "name": "Suppress Armour Resiliency",
-            "hint": "Disable resilient runes on broken armour. Automatically disabled if Potency is suppressed."
+            "name": "Suppress armour resiliency",
+            "hint": "Disable resilient runes on broken armour. Automatically disabled if potency is suppressed."
          },
          "suppressArmourProperty": {
-            "name": "Suppress Armour Properties",
-            "hint": "Disable property runes on broken armour. Automatically disabled if Potency is suppressed."
+            "name": "Suppress armour properties",
+            "hint": "Disable property runes on broken armour. Automatically disabled if potency is suppressed."
          },
          "suppressWeaponPotency": {
-            "name": "Suppress Weapon Potency",
+            "name": "Suppress weapon potency",
             "hint": "Disable fundamental runes on broken weapons. Note: This feature conflicts with Automatic Bonus Progression."
          },
          "suppressWeaponStriking": {
-            "name": "Suppress Weapon Striking",
-            "hint": "Disable striking runes on broken weapons. Automatically disabled if Potency is suppressed."
+            "name": "Suppress weapon striking",
+            "hint": "Disable striking runes on broken weapons. Automatically disabled if potency is suppressed."
          },
          "suppressWeaponProperty": {
-            "name": "Suppress Weapon Properties",
-            "hint": "Disable property runes on broken weapons. Automatically disabled if Potency is suppressed."
+            "name": "Suppress weapon properties",
+            "hint": "Disable property runes on broken weapons. Automatically disabled if potency is suppressed."
          },
          "restrictPreciousMaterial": {
-            "name": "Restrict Precious Material Durability",
+            "name": "Restrict precious material durability",
             "hint": "Apply precious material statistics only if the base item is less durable than the material."
          }
       }

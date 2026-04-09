@@ -1,0 +1,11 @@
+<div class="form-group">
+    <label>{{localize "pf2e-aztecs-sundered.dialog.material.select"}}</label>
+    <div class="form-fields">
+        <select id="mat-select" style="width: 100%;">
+            {{#each options}}
+                <option value="{{this.key}}">{{this.name}} ({{../hdLabel}}: {{this.hd}} | {{../hpLabel}}: {{this.hp}} | {{../btLabel}}: {{this.bt}})</option>
+            {{/each}}
+        </select>
+    </div>
+</div>
+<div id="mat-desc" style="margin-top: 12px; font-style: italic; color: #666; text-align: center; min-height: 40px;"></div>
