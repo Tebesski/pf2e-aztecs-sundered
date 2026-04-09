@@ -263,9 +263,7 @@ export const launchSunderMacro = async (
 
    let corrosiveDamageAmount = 0
    if (attackerData.isCorrosive) {
-      let corrosiveRoll = await new Roll(attackerData.corrosiveDice).evaluate({
-         async: true,
-      })
+      let corrosiveRoll = await new Roll(attackerData.corrosiveDice).evaluate()
       corrosiveDamageAmount = corrosiveRoll.total
    }
 
@@ -533,9 +531,7 @@ export const launchPersistentItemDamageDialog = async (actor, effectItem) => {
          .split(/[pP\[]/)[0]
          .replace(/[^\d\+\-\*\/\(\)d]/gi, "")
          .trim() || "1d6"
-   let persistentDamageRoll = await new Roll(cleanRollFormula).evaluate({
-      async: true,
-   })
+   let persistentDamageRoll = await new Roll(cleanRollFormula).evaluate()
 
    let dialogContent = await renderTemplate(
       "modules/pf2e-aztecs-sundered/templates/persistent-dialog.hbs",
@@ -679,6 +675,10 @@ export const launchRepairDialog = async (itemObject) => {
       ? (itemObject.system.hp?.max ?? 0)
       : (itemObject.getFlag("world", "maxHp") ?? 10)
 
+   let itemBaseHardness = isShieldItem
+      ? (itemObject.system.hardness ?? 0)
+      : (itemObject.getFlag("world", "hardness") ?? 5)
+
    if (currentHitPoints >= maximumHitPoints)
       return ui.notifications.info(
          game.i18n.localize(
@@ -687,9 +687,22 @@ export const launchRepairDialog = async (itemObject) => {
       )
 
    let craftingRank = itemActor.skills.crafting.rank ?? 0
-   let healingValues = [0, 10, 25, 50, 90]
-   let criticalHealingValues = [0, 20, 50, 100, 180]
    let repairDifficultyClass = 15
+
+   let hasCraftersEyepiece = itemActor.items.some(
+      (i) =>
+         i.type === "equipment" &&
+         i.name.includes("Crafter's Eyepiece") &&
+         i.system.equipped?.invested === true,
+   )
+
+   let healingValues = hasCraftersEyepiece
+      ? [10, 20, 30, 40, 50]
+      : [5, 10, 15, 20, 25]
+
+   let criticalHealingValues = hasCraftersEyepiece
+      ? [15, 30, 45, 60, 75]
+      : [10, 20, 30, 40, 50]
 
    const rankNames = [
       game.i18n.localize("pf2e-aztecs-sundered.ranks.untrained"),
@@ -763,14 +776,20 @@ export const launchRepairDialog = async (itemObject) => {
                                   : "failure"
                      }
 
-                     let amountHealed =
-                        outcomeType === "criticalSuccess"
-                           ? criticalHealingValues[craftingRank]
-                           : outcomeType === "success"
-                             ? healingValues[craftingRank]
-                             : outcomeType === "criticalFailure"
-                               ? -5
-                               : 0
+                     let amountHealed = 0
+                     if (outcomeType === "criticalSuccess") {
+                        amountHealed = criticalHealingValues[craftingRank]
+                     } else if (outcomeType === "success") {
+                        amountHealed = healingValues[craftingRank]
+                     } else if (outcomeType === "criticalFailure") {
+                        let critFailRoll = await new Roll("2d6").evaluate()
+                        let damage = Math.max(
+                           0,
+                           critFailRoll.total - itemBaseHardness,
+                        )
+                        amountHealed = -damage
+                     }
+
                      let newlyCalculatedHitPoints =
                         amountHealed > 0
                            ? Math.min(
@@ -827,6 +846,7 @@ export const launchRepairDialog = async (itemObject) => {
                         "pf2e-aztecs-sundered.chat.repair.header",
                         { itemName: itemObject.name },
                      )
+
                      let amountText =
                         amountHealed !== 0
                            ? game.i18n.format(
@@ -852,7 +872,7 @@ export const launchRepairDialog = async (itemObject) => {
                         speaker: ChatMessage.getSpeaker({
                            actor: itemActor || null,
                         }),
-                        content: `<div class="pf2e chat-card"><header class="card-header flexrow"><img src="${itemObject.img}" title="${itemObject.name}" width="36" height="36"/><h3>${repairHeader}</h3></header><div class="card-content" style="margin-top: 5px;"><div style="color: ${outcomeColor}; font-weight: bold; font-size: 1.1em; text-align: center; margin: 4px 0;">${outcomeTextMap[outcomeType] || rolledFallback}</div><div>${amountText}</div><div style="text-align: center; margin-top: 5px;">${currentHpLabel}: <strong>${newlyCalculatedHitPoints} / ${maximumHitPoints}</strong></div></div></div>`,
+                        content: `<div class=\"pf2e chat-card\"><header class=\"card-header flexrow\"><img src=\"${itemObject.img}\" title=\"${itemObject.name}\" width=\"36\" height=\"36\"/><h3>${repairHeader}</h3></header><div class=\"card-content\" style=\"margin-top: 5px;\"><div style=\"color: ${outcomeColor}; font-weight: bold; font-size: 1.1em; text-align: center; margin: 4px 0;\">${outcomeTextMap[outcomeType] || rolledFallback}</div><div>${amountText}</div><div style=\"text-align: center; margin-top: 5px;\">${currentHpLabel}: <strong>${newlyCalculatedHitPoints} / ${maximumHitPoints}</strong></div></div></div>`,
                      })
                   },
                })

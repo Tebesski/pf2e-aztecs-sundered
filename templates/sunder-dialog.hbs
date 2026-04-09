@@ -5,7 +5,7 @@
             <label>{{localize "pf2e-aztecs-sundered.dialog.sunder.select-item"}}</label>
             <select id="item-select" style="width: 100%;">
                 {{#each items}}
-                <option value="{{this.id}}">{{this.name}} ({{localize "pf2e-aztecs-sundered.sheet-text.hp-short"}}: {{this.hp}}/{{this.max}} | {{localize "pf2e-aztecs-sundered.sheet-text.hd-short"}}: {{this.hd}})</option>
+                <option value="{{this.id}}">{{this.name}} ({{localize "pf2e-aztecs-sundered.sheet-text.hp-short"}}: {{this.currentHp}}/{{this.maximumHp}} | {{localize "pf2e-aztecs-sundered.sheet-text.hd-short"}}: {{this.hardness}})</option>
                 {{/each}}
             </select>
         </div>
@@ -70,8 +70,8 @@
     {{/if}}
     <hr>
     <div id="sunder-preview" style="text-align: center; padding: 8px; background: rgba(0,0,0,0.15); border-radius: 5px;">
-        <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.effective-hardness"}}: <strong id="eff-hd">{{items.[0].hd}}</strong></div>
+        <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.effective-hardness"}}: <strong id="eff-hd">{{items.[0].hardness}}</strong></div>
         <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.damage-to-hp"}}: <strong id="net-dmg" style="color: #d9534f;">0</strong></div>
-        <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.remaining-hp"}}: <strong id="rem-hp">{{items.[0].hp}} / {{items.[0].max}}</strong></div>
+        <div>{{localize "pf2e-aztecs-sundered.dialog.sunder.remaining-hp"}}: <strong id="rem-hp">{{items.[0].currentHp}} / {{items.[0].maximumHp}}</strong></div>
     </div>
 </div>
