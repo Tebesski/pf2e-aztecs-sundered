@@ -9,15 +9,24 @@ export const physicalTypes = [
 ]
 
 export const dmgIcons = {
-   fire: { icon: "fa-fire", color: "#e85c23" },
-   acid: { icon: "fa-vial", color: "#2d8a4e" },
-   cold: { icon: "fa-snowflake", color: "#2d6ca1" },
-   electricity: { icon: "fa-bolt", color: "#b99a2c" },
-   sonic: { icon: "fa-wave-square", color: "#198c8c" },
-   slashing: { icon: "fa-axe", color: "#555" },
-   piercing: { icon: "fa-bow-arrow", color: "#555" },
-   bludgeoning: { icon: "fa-hammer", color: "#555" },
-   force: { icon: "fa-sparkles", color: "#8a2be2" },
+   bludgeoning: { icon: "fa-hammer", color: "#aa7a55" },
+   piercing: { icon: "fa-shield-arrow", color: "#a1a1a1" },
+   slashing: { icon: "fa-sword", color: "#cfcfcf" },
+
+   acid: { icon: "fa-vial", color: "#5ba33b" },
+   cold: { icon: "fa-snowflake", color: "#4fa6df" },
+   electricity: { icon: "fa-bolt", color: "#dfb44f" },
+   fire: { icon: "fa-fire", color: "#d9534f" },
+   sonic: { icon: "fa-volume-high", color: "#61c7c9" },
+   force: { icon: "fa-burst", color: "#b963e6" },
+
+   spirit: { icon: "fa-sparkles", color: "#df74ca" },
+   void: { icon: "fa-skull", color: "#483669" },
+   vitality: { icon: "fa-sun", color: "#e39734" },
+   mental: { icon: "fa-brain", color: "#956bd4" },
+   poison: { icon: "fa-skull-crossbones", color: "#74a83b" },
+
+   untyped: { icon: "fa-question", color: "#666666" },
 }
 
 export const materialStats = {

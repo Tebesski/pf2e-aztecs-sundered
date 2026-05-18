@@ -63,34 +63,6 @@ export const registerSettings = () => {
 
    game.settings.register(
       "pf2e-aztecs-sundered",
-      "showAssignMaterialButtonUI",
-      {
-         name: "pf2e-aztecs-sundered.settings.showAssignMaterialButtonUI.name",
-         hint: "pf2e-aztecs-sundered.settings.showAssignMaterialButtonUI.hint",
-         scope: "world",
-         config: true,
-         type: Boolean,
-         default: true,
-         requiresReload: true,
-      },
-   )
-
-   game.settings.register(
-      "pf2e-aztecs-sundered",
-      "showAssignMaterialButtonUI_players",
-      {
-         name: "pf2e-aztecs-sundered.settings.showForPlayers.name",
-         hint: "pf2e-aztecs-sundered.settings.showForPlayers.hint",
-         scope: "world",
-         config: true,
-         type: Boolean,
-         default: true,
-         requiresReload: true,
-      },
-   )
-
-   game.settings.register(
-      "pf2e-aztecs-sundered",
       "showTrackDurabilityButtonUI",
       {
          name: "pf2e-aztecs-sundered.settings.showTrackDurabilityButtonUI.name",
@@ -317,13 +289,6 @@ Hooks.on("renderSettingsConfig", (app, htmlData) => {
          'input[name="pf2e-aztecs-sundered.showDamageButtonUI_players"]',
       )
 
-      const showMaterialUI = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.showAssignMaterialButtonUI"]',
-      )
-      const showMaterialUIPlayers = html.querySelector(
-         'input[name="pf2e-aztecs-sundered.showAssignMaterialButtonUI_players"]',
-      )
-
       const showTrackUI = html.querySelector(
          'input[name="pf2e-aztecs-sundered.showTrackDurabilityButtonUI"]',
       )
@@ -353,12 +318,10 @@ Hooks.on("renderSettingsConfig", (app, htmlData) => {
       setDisplay(showInventoryUIPlayers, isMainOn)
 
       showDamageUI.disabled = !isMainOn
-      showMaterialUI.disabled = !isMainOn
       showTrackUI.disabled = !isMainOn
       showRepairUI.disabled = !isMainOn
 
       setDisplay(showDamageUIPlayers, isMainOn && showDamageUI.checked)
-      setDisplay(showMaterialUIPlayers, isMainOn && showMaterialUI.checked)
       setDisplay(showTrackUIPlayers, isMainOn && showTrackUI.checked)
       setDisplay(showRepairUIPlayers, isMainOn && showRepairUI.checked)
    }

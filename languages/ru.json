@@ -169,7 +169,20 @@
             "title": "Определить материал",
             "select": "Выберите материал",
             "common-examples": "Примеры",
-            "apply-material": "Применить материал"
+            "apply-material": "Применить материал",
+            "none": "-- Нет --"
+         },
+         "durability": {
+            "iwr": "Иммунитеты, Слабости и Сопротивления",
+            "immunities": "Иммунитеты",
+            "select-immunity": "-- Выберите иммунитет --",
+            "weaknesses": "Слабости",
+            "select-weakness": "-- Выберите слабость --",
+            "resistances": "Сопротивления",
+            "select-resistance": "-- Выберите сопротивление --",
+            "title": "Прочность: {itemName}",
+            "save": "Сохранить",
+            "config-title": "Настройка прочности"
          },
          "npc": {
             "select-penalty": "Определите штрафы, которые это существо получит из-за поломки предмета: {itemName}",
@@ -181,7 +194,8 @@
                "full-destruction": "Уничтожить: Применить максимальные штрафы"
             },
             "title": "Сломанная экипировка",
-            "apply-penalties": "Применить штрафы"
+            "apply-penalties": "Применить штрафы",
+            "app-title": "Штраф предмета НПС"
          },
          "sunder": {
             "title": "Разрушение: {actorName}",
@@ -201,7 +215,12 @@
             "apply-persistent": "Применить {formula} {type} продолжительного урона к предмету?",
             "effective-hardness": "Эффективная твердость",
             "damage-to-hp": "Урон по ХП",
-            "remaining-hp": "Оставшиеся ХП"
+            "remaining-hp": "Оставшиеся ХП",
+            "damage-instances": "Урон",
+            "normal": "Обычный",
+            "persistent": "Продолжительный",
+            "add-damage": "Добавить урон",
+            "pending-persistent": "Ожидающий продолжительный эффект:"
          },
          "persistent": {
             "title": "Проверка предмета: {actorName}",
@@ -214,7 +233,10 @@
             "damage-to-hp": "Урон по ХП",
             "remaining-hp": "Оставшиеся ХП",
             "apply-damage": "Применить урон",
-            "end-effect": "Снять эффект"
+            "end-effect": "Снять эффект",
+            "recovery-dc": "СЛ восстановления",
+            "roll-recovery": "Бросок восстановления",
+            "app-title": "Продолжительный урон"
          },
          "repair": {
             "title": "Починка: {itemName}",
@@ -222,7 +244,8 @@
             "crafting-proficiency": "Владение ремеслом",
             "repair-dc": "КС починки",
             "restores-info": "(При успехе восстанавливает {baseHeal} ХП. При крит. успехе {critHeal} ХП)",
-            "roll": "Бросок"
+            "roll": "Бросок",
+            "roll-crafting": "Бросок Ремесла"
          }
       },
       "status": {
@@ -250,10 +273,14 @@
             "raw-incoming": "Чистый урон",
             "eff-hardness": "Эффективная твердость",
             "net-damage": "Итоговый урон по предмету",
-            "current-hp": "Текущие ХП"
+            "current-hp": "Текущие ХП",
+            "content": "<strong>{itemName}</strong> получает {damage} урона.<br>Оставшиеся ХП: {currentHp} / {maxHp}."
          },
          "persistent": {
-            "content": "<strong>{itemName}</strong> получает {damage} продолжительного урона (тип: {type}).<br>Оставшиеся ХП: {currentHp} / {maxHp}."
+            "content": "<strong>{itemName}</strong> получает {damage} продолжительного урона (тип: {type}).<br>Оставшиеся ХП: {currentHp} / {maxHp}.",
+            "recovery-check": "Чистая проверка прочности (восстановление)",
+            "recovery-success": "Успех! Продолжительный эффект снят.",
+            "recovery-failure": "Провал! Эффект остается."
          },
          "repair": {
             "header": "Починка: {itemName}",
@@ -275,9 +302,11 @@
          "hardness": "Твердость",
          "track-durability": "Отслеживать прочность",
          "use-precious": "Применить свойства драгоценного материала",
-         "grisantian-fire": "Это урон огнем?",
-         "grisantian-piercing": "Это колющий или рубящий урон?",
-         "dragonhide-element": "Совпадает ли урон с иммунитетом дракона?"
+         "sunder-item": "Разрушить предмет",
+         "sunder": "Разрушить",
+         "repair": "Ремонт",
+         "durability-config": "Настройка прочности",
+         "open-durability-config": "Открыть настройку прочности"
       },
       "notifications": {
          "cant-equip": "Предмет {itemName} уничтожен и не может быть экипирован",
@@ -288,7 +317,9 @@
          "fully-repaired": "Этот предмет уже имеет максимальное количество HP.",
          "persistent-ended": "Предмет {itemName} больше не получает продолжительный урон.",
          "no-actor-repair": "Не найден персонаж для починки предмета.",
-         "no-crafting-skill": "У этого персонажа нет навыка Ремесло."
+         "no-crafting-skill": "У этого персонажа нет навыка Ремесло.",
+         "applied-damage": "Нанесено {damage} урона по {itemName}.",
+         "trait-assigned": "Этот признак уже назначен."
       },
       "settings": {
          "injectSunderButton": {
@@ -313,7 +344,7 @@
          },
          "showDamageButtonUI": {
             "name": "Показывать управление уроном в инвентаре",
-            "hint": "Отображать молоток урона и галочку игнорирования твердости в строках инвентаря."
+            "hint": "Отображать значок молотка урона в строках инвентаря."
          },
          "showAssignMaterialButtonUI": {
             "name": "Показывать кнопку материалов в инвентаре",

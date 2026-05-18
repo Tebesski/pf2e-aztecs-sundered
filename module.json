@@ -5,20 +5,14 @@
    "version": "#{VERSION}#",
    "compatibility": {
       "minimum": "13",
-      "verified": "13"
+      "verified": "14"
    },
    "authors": [
       {
          "name": "Aztec"
       }
    ],
-   "systems": [
-      {
-         "id": "pf2e",
-         "type": "system"
-      }
-   ],
-   "esmodules": ["scripts/main.js"],
+   "esmodules": ["src/main.mjs"],
    "languages": [
       {
          "lang": "en",

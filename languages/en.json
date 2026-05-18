@@ -169,7 +169,20 @@
             "title": "Assign material",
             "select": "Select material",
             "common-examples": "Common examples",
-            "apply-material": "Apply material"
+            "apply-material": "Apply material",
+            "none": "-- None --"
+         },
+         "durability": {
+            "iwr": "Immunities, Weaknesses & Resistances",
+            "immunities": "Immunities",
+            "select-immunity": "-- Select Immunity --",
+            "weaknesses": "Weaknesses",
+            "select-weakness": "-- Select Weakness --",
+            "resistances": "Resistances",
+            "select-resistance": "-- Select Resistance --",
+            "title": "Durability: {itemName}",
+            "save": "Save",
+            "config-title": "Durability Configuration"
          },
          "npc": {
             "select-penalty": "Select the mechanical penalties to apply to this creature for breaking their {itemName}",
@@ -181,7 +194,8 @@
                "full-destruction": "Destroyed: apply maximum penalties"
             },
             "title": "Broken gear",
-            "apply-penalties": "Apply penalties"
+            "apply-penalties": "Apply penalties",
+            "app-title": "NPC Item Penalty"
          },
          "sunder": {
             "title": "Sunder: {actorName}",
@@ -201,7 +215,12 @@
             "apply-persistent": "Apply {formula} {type} persistent damage to item?",
             "effective-hardness": "Effective Hardness",
             "damage-to-hp": "Damage to HP",
-            "remaining-hp": "Remaining HP"
+            "remaining-hp": "Remaining HP",
+            "damage-instances": "Damage Instances",
+            "normal": "Normal",
+            "persistent": "Persistent",
+            "add-damage": "Add Damage",
+            "pending-persistent": "Pending Persistent Effect:"
          },
          "persistent": {
             "title": "Item flat check: {actorName}",
@@ -214,7 +233,10 @@
             "damage-to-hp": "Damage to HP",
             "remaining-hp": "Remaining HP",
             "apply-damage": "Apply damage",
-            "end-effect": "End effect"
+            "end-effect": "End effect",
+            "recovery-dc": "Recovery DC",
+            "roll-recovery": "Roll Recovery",
+            "app-title": "Persistent Damage"
          },
          "repair": {
             "title": "Repair {itemName}",
@@ -222,7 +244,8 @@
             "crafting-proficiency": "Crafting proficiency",
             "repair-dc": "Repair DC",
             "restores-info": "(Default success restores {baseHeal} HP. Crit restores {critHeal} HP)",
-            "roll": "Roll"
+            "roll": "Roll",
+            "roll-crafting": "Roll Crafting"
          }
       },
       "sheet-text": {
@@ -237,9 +260,11 @@
          "hardness": "Hardness",
          "track-durability": "Track durability",
          "use-precious": "Apply precious material durability",
-         "grisantian-fire": "Is this fire damage?",
-         "grisantian-piercing": "Is this piercing or slashing damage?",
-         "dragonhide-element": "Does this match the dragon's elemental immunity?"
+         "sunder-item": "Sunder item",
+         "sunder": "Sunder",
+         "repair": "Repair",
+         "durability-config": "Durability configuration",
+         "open-durability-config": "Open Durability configuration"
       },
       "status": {
          "broken": "Broken",
@@ -263,13 +288,17 @@
          "sunder-button-label": "SUNDER",
          "sunder": {
             "header": "Sundered: {itemName}",
-            "raw-incoming": "Raw incoming",
+            "raw-incoming": "Damage incoming",
             "eff-hardness": "Effective Hardness",
-            "net-damage": "Net damage taken",
-            "current-hp": "Current HP"
+            "net-damage": "Damage taken",
+            "current-hp": "Current HP",
+            "content": "<strong>{itemName}</strong> took {damage} damage.<br>Remaining HP: {currentHp} / {maxHp}."
          },
          "persistent": {
-            "content": "<strong>{itemName}</strong> took {damage} persistent {type} damage.<br>Remaining HP: {currentHp} / {maxHp}."
+            "content": "<strong>{itemName}</strong> took {damage} persistent {type} damage.<br>Remaining HP: {currentHp} / {maxHp}.",
+            "recovery-check": "Durability Flat Check (Recovery)",
+            "recovery-success": "Success! Persistent effect removed.",
+            "recovery-failure": "Failure! Effect remains."
          },
          "repair": {
             "header": "Repair: {itemName}",
@@ -288,7 +317,9 @@
          "fully-repaired": "This item is already at maximum HP.",
          "persistent-ended": "{itemName} is no longer taking persistent damage.",
          "no-actor-repair": "No actor found to perform the repair.",
-         "no-crafting-skill": "This actor does not have a Crafting skill."
+         "no-crafting-skill": "This actor does not have a Crafting skill.",
+         "applied-damage": "Applied {damage} damage to {itemName}.",
+         "trait-assigned": "This trait is already assigned."
       },
       "settings": {
          "showInventoryUI": {
@@ -309,7 +340,7 @@
          },
          "showDamageButtonUI": {
             "name": "Show damage controls in inventory",
-            "hint": "Display the damage hammer and ignore-hardness checkbox on the inventory rows."
+            "hint": "Display the damage hammer icon on the inventory rows."
          },
          "showAssignMaterialButtonUI": {
             "name": "Show material button in inventory",

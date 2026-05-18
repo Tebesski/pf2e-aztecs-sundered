@@ -1,24 +1,31 @@
-<div style="display: flex; flex-direction: column; gap: 10px;">
-   <div style="text-align: center; margin-bottom: 5px;">
-      {{localize "pf2e-aztecs-sundered.dialog.repair.repairing"}}
-      <strong>{{item.name}}</strong>
-   </div>
-   <div class="form-group">
-      <label>{{localize
-            "pf2e-aztecs-sundered.dialog.repair.crafting-proficiency"
-         }}</label>
-      <input type="text" value="{{rankName}}" disabled />
-   </div>
-   <div class="form-group">
-      <label>{{localize "pf2e-aztecs-sundered.dialog.repair.repair-dc"}}</label>
-      <input type="number" id="repair-dc" value="{{dc}}" />
-   </div>
-   <hr />
-   <div style="text-align: center; font-size: 0.9em; color: gray;">
-      {{localize
-         "pf2e-aztecs-sundered.dialog.repair.restores-info"
-         baseHeal=baseHeal
-         critHeal=critHeal
-      }}
-   </div>
+<div class="dialog-content" style="display: flex; flex-direction: column; gap: 10px;">
+    
+    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1.1em;">
+        <img src="{{item.img}}" style="width: 36px; height: 36px; border: 1px solid #444; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
+        <strong>{{item.name}} ({{localize "pf2e-aztecs-sundered.sheet-text.hp-short"}}: {{currentHp}} / {{maximumHp}})</strong>
+    </div>
+    
+    <hr style="margin: 0;">
+
+    <div class="form-group">
+        <label>{{localize "pf2e-aztecs-sundered.dialog.repair.crafting-proficiency"}}</label>
+        <select id="repair-rank" style="width: 100%;">
+            {{#each ranks}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+            {{/each}}
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>{{localize "pf2e-aztecs-sundered.dialog.repair.repair-dc"}}</label>
+        <input type="number" id="repair-dc" value="{{dc}}">
+    </div>
+
+    <div style="text-align: center; font-size: 0.9em; color: var(--color-text-dark-secondary);">
+        <span id="repair-restores-info">{{restoresInfo}}</span>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-top: 8px;">
+<button type="button" data-action="repair" style="width: 50%;"><i class="fa-solid fa-dice-d20"></i> {{localize "pf2e-aztecs-sundered.dialog.repair.roll-crafting"}}</button>
+    </div>
 </div>

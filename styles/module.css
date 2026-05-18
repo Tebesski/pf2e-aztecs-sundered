@@ -3,22 +3,16 @@
    text-decoration: underline dotted;
    cursor: text;
 }
-a.damage-hammer {
-   color: #888;
-   transition: color 0.2s ease, transform 0.1s ease;
-   cursor: pointer;
+
+.aztec-action-btn {
+   color: #191813; /* Standard PF2e icon colour */
+   text-shadow: none !important; /* Block the white glow from the <h4> */
+   transition:
+      color 0.2s,
+      text-shadow 0.2s;
 }
-a.damage-hammer:hover {
-   color: #d9534f;
-   transform: scale(1.2);
-}
-a.add-durability {
-   color: #888;
-   margin-left: 10px;
-   cursor: pointer;
-   transition: color 0.2s ease;
-}
-a.add-durability:hover {
-   color: #5bc0de;
-   transform: scale(1.2);
+
+.aztec-action-btn:hover {
+   color: var(--color-text-red, #d9534f);
+   text-shadow: 0 0 1px var(--color-text-red, #d9534f) !important; /* Standard PF2e red glow */
 }

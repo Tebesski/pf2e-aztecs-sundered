@@ -2,31 +2,36 @@
    <div
       style="text-align: center; padding: 10px; background: rgba(200, 50, 50, 0.15); border-radius: 5px;"
    >
-      <p style="margin: 0; font-size: 1.1em;"><strong>{{item.name}}</strong>
+      <p style="margin: 0; font-size: 1.1em;">
+         <strong>{{item.name}}</strong>
          {{localize "pf2e-aztecs-sundered.dialog.persistent.takes"}}
          <strong>{{dmg}}</strong>
          {{flags.type}}
-         {{localize
-            "pf2e-aztecs-sundered.dialog.persistent.persistent-damage"
-         }}</p>
-      <p style="margin: 0; font-size: 0.85em; color: gray;">({{localize
-            "pf2e-aztecs-sundered.dialog.persistent.rolled"
-         }}
-         {{cleanFormula}})</p>
+         {{localize "pf2e-aztecs-sundered.dialog.persistent.persistent-damage"}}
+      </p>
    </div>
+
    <div class="form-group">
       <label>{{localize
             "pf2e-aztecs-sundered.dialog.persistent.ignore-hardness"
          }}</label>
       <input type="number" id="pers-ignore-hd" value="0" />
    </div>
+
    <div class="form-group">
       <label>{{localize
-            "pf2e-aztecs-sundered.dialog.persistent.custom-resistance"
+            "pf2e-aztecs-sundered.dialog.persistent.recovery-dc"
          }}</label>
-      <input type="number" id="pers-custom-res" value="0" />
+      <input
+         type="number"
+         id="pers-recovery-dc"
+         value="15"
+         style="text-align: center;"
+      />
    </div>
+
    <hr />
+
    <div
       id="pers-preview"
       style="text-align: center; padding: 8px; background: rgba(0,0,0,0.15); border-radius: 5px;"
@@ -36,11 +41,26 @@
          }}:
          <strong id="pers-eff-hd">{{baseHd}}</strong></div>
       <div>{{localize "pf2e-aztecs-sundered.dialog.persistent.damage-to-hp"}}:
-         <strong
-            id="pers-net-dmg"
-            style="color: #d9534f;"
-         >{{initialNetDmg}}</strong></div>
+         <strong id="pers-net-dmg">{{initialNetDmg}}</strong></div>
       <div>{{localize "pf2e-aztecs-sundered.dialog.persistent.remaining-hp"}}:
          <strong id="pers-rem-hp">{{initialNewHp}} / {{maxHp}}</strong></div>
+   </div>
+
+   <div
+      class="pers-actions"
+      style="display: flex; gap: 10px; margin-top: 10px;"
+   >
+      <button type="button" data-action="damage" style="flex: 1;">
+         <i class="fa-solid fa-hammer"></i>
+         {{localize "pf2e-aztecs-sundered.dialog.persistent.apply-damage"}}
+      </button>
+      <button type="button" data-action="recovery" style="flex: 1;">
+         <i class="fa-solid fa-dice-d20"></i>
+         {{localize "pf2e-aztecs-sundered.dialog.persistent.roll-recovery"}}
+      </button>
+      <button type="button" data-action="end" style="flex: 1;">
+         <i class="fa-solid fa-times"></i>
+         {{localize "pf2e-aztecs-sundered.dialog.persistent.end-effect"}}
+      </button>
    </div>
 </div>
