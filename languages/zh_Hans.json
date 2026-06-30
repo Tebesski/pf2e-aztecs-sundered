@@ -1,0 +1,415 @@
+{
+    "pf2e-aztecs-sundered": {
+        "settings": {
+            "armourPenaltyLight": {
+                "name": "轻甲破损减值",
+                "hint": "应用于破损轻甲的状态减值。"
+            },
+            "armourPenaltyMedium": {
+                "name": "中甲破损减值",
+                "hint": "应用于破损中甲的状态减值。"
+            },
+            "armourPenaltyHeavy": {
+                "name": "重甲破损减值",
+                "hint": "应用于破损重甲的状态减值。"
+            },
+            "restrictPreciousMaterial": {
+                "name": "限制珍贵材料耐久度",
+                "hint": "仅当基础物品的耐久度低于该材料时，才应用珍贵材料耐久度。"
+            },
+            "suppressArmourPotency": {
+                "name": "抑制护甲潜能符文",
+                "hint": "禁用破损护甲上的潜能符文。注意：该特性与自动成长加值冲突。"
+            },
+            "suppressArmourResilient": {
+                "name": "抑制护甲韧性符文",
+                "hint": "禁用破损护甲上的韧性符文。若潜能符文被抑制则自动禁用。"
+            },
+            "suppressArmourProperty": {
+                "name": "抑制护甲性能符文",
+                "hint": "禁用破损护甲上的性能符文。若潜能符文被抑制则自动禁用。"
+            },
+            "suppressWeaponPotency": {
+                "name": "抑制武器潜能符文",
+                "hint": "禁用破损武器上的潜能符文。注意：该特性与自动成长加值冲突。"
+            },
+            "suppressWeaponStriking": {
+                "name": "抑制武器强击符文",
+                "hint": "禁用破损武器上的强击符文。若潜能符文被抑制则自动禁用。"
+            },
+            "suppressWeaponProperty": {
+                "name": "抑制武器性能符文",
+                "hint": "禁用破损武器上的性能符文。若潜能符文被抑制则自动禁用。"
+            },
+            "enableArmourPenalty": {
+                "name": "启用破损护甲减值",
+                "hint": "当防御装备的生命值低于破损阈值时，对护甲等级应用状态减值。"
+            },
+            "enableWeaponPenalty": {
+                "name": "启用破损武器减值",
+                "hint": "当武器的生命值低于破损阈值时，对攻击和伤害掷骰应用物品减值。"
+            },
+            "weaponPenaltyAmount": {
+                "name": "武器减值",
+                "hint": "应用于破损武器的具体物品减值。"
+            },
+            "laminarPenaltyReduction": {
+                "name": "分层特征护甲减值减免",
+                "hint": "用于减免破损分层护甲状态减值的数值。例如，若设为1，则破损分层轻甲的减值将-1，至多为0减值。"
+            },
+            "showTrackDurabilityButtonUI": {
+                "name": "添加追踪耐久度按钮",
+                "hint": "在物品栏添加按钮，以追踪常规物品的耐久度。"
+            },
+            "showRepairButtonUI": {
+                "name": "在物品栏添加修理按钮",
+                "hint": "添加扳手图标，以基于熟练度的手艺检定快速恢复物品HP。"
+            },
+            "showForPlayers": {
+                "hint": "若启用，非GM玩家也会在其角色物品栏中看到该元素。",
+                "name": "└ 同时向玩家展示"
+            },
+            "injectSunderButton": {
+                "name": "在聊天卡片添加损毁按钮",
+                "hint": "在伤害聊天卡片上添加快速访问的损毁按钮，可以自动读取骰掷的伤害值。"
+            },
+            "allowPlayersSunderButton": {
+                "name": "允许玩家在聊天卡片使用损毁按钮",
+                "hint": "若启用，非GM玩家也会看到并能够使用聊天卡片的损毁按钮。"
+            },
+            "showDamageButtonUI": {
+                "name": "在物品栏添加伤害控制按钮",
+                "hint": "在物品栏添加锤子图标，以控制物品所受伤害。"
+            },
+            "showAssignMaterialButtonUI": {
+                "name": "在物品栏添加材料按钮",
+                "hint": "在物品栏添加“M”按钮，用于赋予自定义材料。"
+            },
+            "showInventoryUI": {
+                "name": "显示于物品栏界面",
+                "hint": "在主要物品栏中显示耐久度追踪信息与伤害控制。"
+            }
+        },
+        "chat": {
+            "repair": {
+                "header": "修理：{itemName}",
+                "healed": "物品恢复<strong>{amount}</strong>点HP。",
+                "damaged": "物品受到<strong>{amount}</strong>点伤害。",
+                "current-hp": "当前生命值",
+                "no-hp-restored": "未恢复HP。"
+            },
+            "sunder": {
+                "eff-hardness": "有效硬度",
+                "current-hp": "当前生命值",
+                "header": "已损毁：{itemName}",
+                "content": "<strong>{itemName}</strong>受到{damage}点伤害。<br>剩余生命值：{currentHp} / {maxHp}。",
+                "raw-incoming": "原始伤害",
+                "net-damage": "承受伤害"
+            },
+            "persistent": {
+                "recovery-success": "成功！持续伤害终止。",
+                "recovery-check": "耐久度纯骰检定（恢复）",
+                "content": "<strong>{itemName}</strong>受到{damage}点持续{type}伤害。<br>剩余生命值：{currentHp} / {maxHp}。",
+                "recovery-failure": "失败！持续伤害保留。"
+            },
+            "sunder-button-label": "损毁"
+        },
+        "sheet-text": {
+            "ignore-hardness": "无视硬度",
+            "strike-item": "打击物品",
+            "hardness": "硬度",
+            "sunder-item": "损毁物品",
+            "sunder": "损毁",
+            "repair": "修理",
+            "repair-item": "修理物品",
+            "hp": "HP",
+            "hp-short": "HP",
+            "hd-short": "硬度",
+            "bt-short": "BT",
+            "track-durability": "追踪耐久度",
+            "use-precious": "应用珍贵材料耐久度",
+            "durability-config": "耐久度配置",
+            "open-durability-config": "打开耐久度配置",
+            "damage-amt": "伤害值"
+        },
+        "status": {
+            "broken": "破损",
+            "destroyed": "被摧毁"
+        },
+        "ranks": {
+            "untrained": "未受训",
+            "trained": "受训",
+            "expert": "专家",
+            "master": "大师",
+            "legendary": "传奇"
+        },
+        "outcomes": {
+            "critical-success": "大成功",
+            "success": "成功",
+            "failure": "失败",
+            "critical-failure": "大失败",
+            "rolled": "掷骰"
+        },
+        "material-stats": {
+            "glass": {
+                "name": "玻璃",
+                "examples": "玻璃砖，玻璃桌，沉重花瓶"
+            },
+            "cloth": {
+                "name": "布匹",
+                "examples": "布甲，厚重夹克，袋子，帐篷"
+            },
+            "glass-thin": {
+                "name": "薄玻璃",
+                "examples": "瓶子，眼镜，窗玻璃"
+            },
+            "glass-structure": {
+                "name": "玻璃构造",
+                "examples": "玻璃砖墙"
+            },
+            "paper": {
+                "examples": "书页，纸扇，卷轴",
+                "name": "纸张"
+            },
+            "cloth-thin": {
+                "name": "薄布",
+                "examples": "风筝，丝绸裙，汗衫"
+            },
+            "leather-thin": {
+                "name": "薄皮革",
+                "examples": "背包，夹克，口袋，肩带，鞭子"
+            },
+            "leather": {
+                "name": "皮革",
+                "examples": "皮甲，鞍具"
+            },
+            "rope": {
+                "name": "绳索",
+                "examples": "工业用绳，船舶索具"
+            },
+            "stone-thin": {
+                "name": "薄石料",
+                "examples": "黑板，石板砖，石材饰面板"
+            },
+            "stone": {
+                "name": "石料",
+                "examples": "铺路石，雕像"
+            },
+            "stone-structure": {
+                "examples": "石墙",
+                "name": "石制构造"
+            },
+            "iron-structure": {
+                "examples": "铁板墙",
+                "name": "钢铁构造"
+            },
+            "rope-thin": {
+                "name": "细绳",
+                "examples": "标准冒险绳索"
+            },
+            "wood-thin": {
+                "name": "薄木材",
+                "examples": "椅子，棍棒，树苗，木盾"
+            },
+            "iron-thin": {
+                "name": "薄铁料或薄钢材",
+                "examples": "铁链，钢盾，剑"
+            },
+            "wood": {
+                "name": "木材",
+                "examples": "箱子，简易门，桌子，树干"
+            },
+            "iron": {
+                "name": "铁料或钢材",
+                "examples": "铁砧，铁甲或钢甲，炉灶"
+            },
+            "wood-structure": {
+                "name": "木制构造",
+                "examples": "加固门，木墙"
+            }
+        },
+        "rule-elements": {
+            "broken": {
+                "armor": "破损护甲",
+                "weapon": "破损武器",
+                "resilient-rune": "破损韧性符文",
+                "striking-rune": "破损强击符文",
+                "other-rune": "破损{type}符文"
+            }
+        },
+        "dialog": {
+            "ignore-hardness": {
+                "title": "无视硬度",
+                "damage-to-hp": "预计对HP造成的伤害",
+                "amount-to-ignore": "无视的硬度值"
+            },
+            "material": {
+                "select": "选择材料",
+                "none": "-- 无 --",
+                "apply-material": "应用材料",
+                "common-examples": "常见示例",
+                "title": "指定材料"
+            },
+            "durability": {
+                "iwr": "免疫，弱点与抗力",
+                "immunities": "免疫",
+                "select-immunity": "-- 选择免疫 --",
+                "weaknesses": "弱点",
+                "select-weakness": "-- 选择弱点 --",
+                "resistances": "抗力",
+                "select-resistance": "-- 选择抗力 --",
+                "save": "保存",
+                "title": "耐久度：{itemName}",
+                "config-title": "耐久度配置"
+            },
+            "sunder": {
+                "apply-damage": "应用伤害",
+                "select-item": "选择物品",
+                "corrosive-rune": "侵蚀符文（酸蚀）",
+                "ignore-hardness": "无视硬度",
+                "custom-resistance": "自定义抗力",
+                "effective-hardness": "有效硬度",
+                "damage-to-hp": "实际伤害",
+                "remaining-hp": "剩余HP",
+                "normal": "正常",
+                "persistent": "持续",
+                "add-damage": "添加伤害",
+                "damage-instances": "伤害实例",
+                "adamantine-grade": "精金品质",
+                "standard-grade": "标准品质：14",
+                "high-grade": "高品质：17",
+                "title": "损毁：{actorName}",
+                "custom-resistance-title": "应用硬度后的额外伤害减免",
+                "adamantine-prompt": "攻击者使用了精金武器？",
+                "apply-persistent": "对物品应用{formula}点持续{type}伤害？",
+                "rolled": "掷骰",
+                "selected-raw-damage": "所选原始伤害",
+                "razing-trait-damage": "清除特征伤害",
+                "pending-persistent": "待定持续伤害："
+            },
+            "persistent": {
+                "ignore-hardness": "无视硬度",
+                "custom-resistance": "自定义抗力",
+                "effective-hardness": "有效硬度",
+                "damage-to-hp": "实际伤害",
+                "remaining-hp": "剩余HP",
+                "apply-damage": "应用伤害",
+                "app-title": "持续伤害",
+                "persistent-damage": "持续伤害！",
+                "title": "物品纯骰检定：{actorName}",
+                "end-effect": "结束效果",
+                "rolled": "掷骰",
+                "recovery-dc": "恢复DC",
+                "roll-recovery": "骰掷恢复检定",
+                "takes": "受到"
+            },
+            "repair": {
+                "title": "修理{itemName}",
+                "crafting-proficiency": "手艺熟练度",
+                "repair-dc": "修理DC",
+                "roll-crafting": "骰掷手艺",
+                "roll": "掷骰",
+                "repairing": "修理",
+                "restores-info": "（默认成功恢复{baseHeal}点HP。大成功恢复{baseHeal}点HP）"
+            },
+            "npc": {
+                "penalties": {
+                    "ac": "AC减值",
+                    "resilient": "抑制韧性符文",
+                    "attack-damage": "攻击和伤害减值",
+                    "striking": "抑制强击符文",
+                    "full-destruction": "被摧毁：应用最大减值"
+                },
+                "apply-penalties": "应用减值",
+                "select-penalty": "选择在该生物{itemName}被破坏时，对其应用的机制惩罚",
+                "title": "破损道具",
+                "app-title": "NPC物品减值"
+            }
+        },
+        "effect": {
+            "persistent-damage": {
+                "name": "持续伤害：{itemName}",
+                "desc": "在回合结束时受到{formula}点{type}伤害。"
+            }
+        },
+        "armor-property": {
+            "acidResistant": {
+                "label": "酸蚀抗力降低5点"
+            },
+            "coldResistant": {
+                "label": "寒冷抗力降低5点"
+            },
+            "electricityResistant": {
+                "label": "电击抗力降低5点"
+            },
+            "fireResistant": {
+                "label": "火焰抗力降低5点"
+            },
+            "sonicResistant": {
+                "label": "音波抗力降低5点"
+            },
+            "shadow": {
+                "label": "隐秘调整值降低1"
+            },
+            "greaterShadow": {
+                "label": "隐秘调整值降低2"
+            },
+            "majorShadow": {
+                "label": "隐秘调整值降低3"
+            },
+            "slick": {
+                "label": "特技调整值降低1"
+            },
+            "greaterSlick": {
+                "label": "特技调整值降低2"
+            },
+            "majorSlick": {
+                "label": "特技调整值降低3"
+            }
+        },
+        "weapon-property": {
+            "flaming": {
+                "label": "火焰伤害移除"
+            },
+            "frost": {
+                "label": "寒冷伤害移除"
+            },
+            "shock": {
+                "label": "电击伤害移除"
+            },
+            "corrosive": {
+                "label": "酸蚀伤害移除"
+            },
+            "thundering": {
+                "label": "音波伤害移除"
+            },
+            "holy": {
+                "label": "精魂伤害（圣洁）移除"
+            },
+            "unholy": {
+                "label": "精魂伤害（邪秽）移除"
+            }
+        },
+        "broken-effect": {
+            "label": "破损{itemName}",
+            "description": "因{itemName}破损而被应用的机制惩罚"
+        },
+        "destroyed-effect": {
+            "label": "被摧毁：{itemName}",
+            "description": "{itemName}已完全被摧毁，无法提供任何益处。"
+        },
+        "notifications": {
+            "applied-damage": "对{itemName}造成{damage}点伤害。",
+            "cant-equip": "{itemName}已被摧毁，无法装备",
+            "cant-stow": "{containerName}已被摧毁，无法存放任何物品",
+            "no-target": "请先选择目标指示物，以损毁其装备。",
+            "no-items": "目标角色没有可损毁的有效物品。",
+            "fully-repaired": "该物品已达到最大生命值。",
+            "corrosive-added": "损毁物品时已添加侵蚀符文的{dmg}点酸蚀伤害！",
+            "persistent-ended": "{itemName}不再受到持续伤害。",
+            "no-actor-repair": "未找到可执行修理动作的角色。",
+            "no-crafting-skill": "该角色没有手艺技能。",
+            "trait-assigned": "该特征已分配。"
+        }
+    }
+}

@@ -23,6 +23,11 @@
          "lang": "ru",
          "name": "Russian",
          "path": "languages/ru.json"
+      },
+      {
+         "lang": "cn",
+         "name": "简体中文",
+         "path": "languages/zh-Hans.json"
       }
    ],
    "styles": ["styles/module.css"],
